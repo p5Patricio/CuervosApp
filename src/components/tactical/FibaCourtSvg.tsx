@@ -81,7 +81,7 @@ export const FibaCourtSvg: React.FC<FibaCourtSvgProps> = ({ className = '', isWe
 
       {/* Watermark Cuervos Logo in Center Circle */}
       <g transform="translate(500, 110) scale(0.35)" opacity="0.2">
-        <image href="/logo-cuervos.svg" x="-256" y="-256" width="512" height="512" />
+        <image href={`${import.meta.env.BASE_URL}logo-cuervos.svg`} x="-256" y="-256" width="512" height="512" />
       </g>
 
       {/* FIBA Paint / Restricted Key Area */}

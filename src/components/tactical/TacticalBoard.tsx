@@ -6,6 +6,7 @@ import { DrawingCanvas } from './DrawingCanvas';
 import { DefensiveFormationsBar } from './DefensiveFormationsBar';
 import { FramePlayerControls } from './FramePlayerControls';
 import { OpponentBadgeModal } from './OpponentBadgeModal';
+import { QuickTokenHud } from './QuickTokenHud';
 import { BoardToken } from '../../types';
 import { 
   Move, 
@@ -50,11 +51,17 @@ export const TacticalBoard: React.FC = () => {
     deleteSequence,
     setIsPlayingSequence,
     toggleFullScreen,
+    players,
+    incrementFouls,
+    decrementFouls,
+    setFatigue,
+    substitutePlayerOnBoard,
   } = useCuervosStore();
 
   const boardContainerRef = useRef<HTMLDivElement | null>(null);
   const [draggingTokenId, setDraggingTokenId] = useState<string | null>(null);
   const [badgeModalToken, setBadgeModalToken] = useState<BoardToken | null>(null);
+  const [selectedHudToken, setSelectedHudToken] = useState<BoardToken | null>(null);
   const [activeBottomPanel, setActiveBottomPanel] = useState<'defensas' | 'frames' | 'none'>('defensas');
 
   // Dragging logic via Pointer Events
@@ -118,6 +125,15 @@ export const TacticalBoard: React.FC = () => {
     { name: 'Rojo Alerta', hex: '#EF4444' },
     { name: 'Blanco Puro', hex: '#FFFFFF' },
   ];
+
+  const ball = tokens.find((t) => t.type === 'ball');
+  const isWeakSideFloating = (token: BoardToken) => {
+    if (!isWeakSideFloatActive || token.type !== 'cuervos') return false;
+    if (!ball) return token.id === 'c-4';
+    if (ball.x > 55) return token.x < 45;
+    if (ball.x < 45) return token.x > 55;
+    return false;
+  };
 
   return (
     <div
@@ -258,10 +274,10 @@ export const TacticalBoard: React.FC = () => {
       </div>
 
       {/* Main Court Canvas Area */}
-      <div className="relative flex-1 w-full min-h-0 flex items-center justify-center overflow-hidden">
+      <div className="relative flex-1 w-full min-h-0 flex items-center justify-center p-1 overflow-hidden">
         <div
           ref={boardContainerRef}
-          className="relative w-full h-full max-w-[950px] aspect-[15/14] bg-cuervos-950 rounded-2xl overflow-hidden border border-cuervos-border shadow-2xl touch-none-board"
+          className="relative max-h-full max-w-full aspect-[1000/933] m-auto bg-cuervos-950 rounded-2xl overflow-hidden border border-cuervos-border shadow-2xl touch-none-board"
         >
           {/* FIBA Half-court SVG Base */}
           <FibaCourtSvg isWeakSideFloatActive={isWeakSideFloatActive} />
@@ -283,11 +299,15 @@ export const TacticalBoard: React.FC = () => {
               isDragging={draggingTokenId === token.id}
               isDrawingMode={drawingMode === 'draw'}
               onDragStart={handleDragStart}
+              onTapToken={(id) => {
+                const found = tokens.find((t) => t.id === id);
+                if (found) setSelectedHudToken(found);
+              }}
               onDoubleTapOpponent={(oppId) => {
                 const found = tokens.find((t) => t.id === oppId);
                 if (found) setBadgeModalToken(found);
               }}
-              isFloating={isWeakSideFloatActive && token.id === 'c-4'}
+              isFloating={isWeakSideFloating(token)}
             />
           ))}
 
@@ -297,7 +317,7 @@ export const TacticalBoard: React.FC = () => {
               <span className="w-2 h-2 rounded-full bg-cuervos-cyan animate-ping" />
               <span>
                 {drawingMode === 'move'
-                  ? 'Arrastra con el dedo a 60fps • Toca 2x un rival para asignarle rol'
+                  ? 'Arrastra a 60fps • Toca para HUD rápido • Toca 2x rival para etiqueta'
                   : 'Modo Pizarra: Dibuja flechas tácticas con el dedo'}
               </span>
             </div>
@@ -336,6 +356,19 @@ export const TacticalBoard: React.FC = () => {
           />
         )}
       </div>
+
+      {/* Quick HUD for tapped token (Cuervos / Opponent) */}
+      <QuickTokenHud
+        token={selectedHudToken}
+        players={players}
+        tokens={tokens}
+        onClose={() => setSelectedHudToken(null)}
+        onIncrementFouls={incrementFouls}
+        onDecrementFouls={decrementFouls}
+        onSetFatigue={setFatigue}
+        onSubstitute={substitutePlayerOnBoard}
+        onSelectOpponentBadge={updateOpponentBadge}
+      />
 
       {/* Opponent Badge Assignment Modal */}
       <OpponentBadgeModal

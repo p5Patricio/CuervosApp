@@ -60,6 +60,7 @@ export const RosterManager: React.FC = () => {
 
   const presentCount = players.filter((p) => p.asistencia === 'presente').length;
   const foulTroubleCount = players.filter((p) => p.faltasEnVivo >= 4).length;
+  const maxTeamHeight = players.length > 0 ? Math.max(...players.map((p) => p.estatura)) : 180;
 
   return (
     <div className="w-full max-w-7xl mx-auto p-3 sm:p-6 space-y-6">
@@ -151,7 +152,7 @@ export const RosterManager: React.FC = () => {
             onSetFatigue={setFatigue}
             onEdit={handleOpenEditModal}
             onDelete={deletePlayer}
-            isSoleTallPlayer={player.dorsal === 15 || player.rolPrimario === 'Ancla Central'}
+            isSoleTallPlayer={player.rolPrimario === 'Ancla Central' || player.estatura === maxTeamHeight}
           />
         ))}
       </div>

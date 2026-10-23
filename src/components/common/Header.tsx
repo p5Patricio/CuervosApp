@@ -20,12 +20,12 @@ export const Header: React.FC = () => {
           <div className="flex items-center gap-3">
             <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden bg-cuervos-dark border border-cuervos-cyan/60 shadow-cyan-glow shrink-0 flex items-center justify-center">
               <img
-                src="/logo-cuervos.png"
+                src={`${import.meta.env.BASE_URL}logo-cuervos.png`}
                 alt="Logo Oficial Cuervos Básquetbol"
                 className="w-full h-full object-contain p-0.5"
                 onError={(e) => {
                   // Fallback to svg if png fails
-                  (e.target as HTMLImageElement).src = '/logo-cuervos.svg';
+                  (e.target as HTMLImageElement).src = `${import.meta.env.BASE_URL}logo-cuervos.svg`;
                 }}
               />
             </div>

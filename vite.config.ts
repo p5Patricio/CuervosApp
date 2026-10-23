@@ -15,7 +15,7 @@ export default defineConfig({
         theme_color: '#0A0D14',
         background_color: '#06080E',
         display: 'standalone',
-        orientation: 'landscape-primary',
+        orientation: 'any',
         icons: [
           {
             src: '/logo-cuervos.png',

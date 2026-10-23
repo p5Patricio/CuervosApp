@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useCuervosStore } from '../../store/useCuervosStore';
-import { Download, Upload, RotateCcw, X, Database, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Download, Upload, RotateCcw, X, Database, CheckCircle, AlertTriangle, UserMinus } from 'lucide-react';
 
 interface BackupModalProps {
   isOpen: boolean;
@@ -8,7 +8,7 @@ interface BackupModalProps {
 }
 
 export const BackupModal: React.FC<BackupModalProps> = ({ isOpen, onClose }) => {
-  const { exportDatabaseJson, importDatabaseJson, resetToSeedData } = useCuervosStore();
+  const { exportDatabaseJson, importDatabaseJson, resetToSeedData, clearDemoRosterAndLogs } = useCuervosStore();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [statusMessage, setStatusMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
@@ -50,6 +50,13 @@ export const BackupModal: React.FC<BackupModalProps> = ({ isOpen, onClose }) => 
     if (window.confirm('¿Deseas restaurar todos los datos originales semilla de Cuervos?')) {
       resetToSeedData();
       setStatusMessage({ text: 'Datos semilla restaurados con éxito.', type: 'success' });
+    }
+  };
+
+  const handleClearDemo = () => {
+    if (window.confirm('¿Deseas vaciar la plantilla, bitácoras y scouting de prueba para ingresar los datos reales de tu equipo? (Se mantendrán intactas las 3 defensas y la wiki táctica)')) {
+      clearDemoRosterAndLogs();
+      setStatusMessage({ text: 'Plantilla de prueba y bitácoras limpiadas con éxito. Las defensas y el manual siguen listos.', type: 'success' });
     }
   };
 
@@ -143,6 +150,21 @@ export const BackupModal: React.FC<BackupModalProps> = ({ isOpen, onClose }) => 
               </div>
             </div>
             <span className="text-[10px] text-red-400">Reset</span>
+          </button>
+
+          {/* Clear Demo Data */}
+          <button
+            onClick={handleClearDemo}
+            className="w-full flex items-center justify-between p-3 rounded-xl bg-cuervos-elevated hover:bg-cuervos-border border border-slate-700 text-xs font-bold text-slate-300 hover:text-white transition-all"
+          >
+            <div className="flex items-center gap-2.5">
+              <UserMinus className="w-4 h-4 text-slate-400" />
+              <div className="text-left">
+                <span className="block">Limpiar Demo y Empezar de Cero</span>
+                <span className="text-[10px] text-slate-400 font-normal">Vaciar jugadores y partidos para cargar tu equipo real</span>
+              </div>
+            </div>
+            <span className="text-[10px] text-slate-400">Limpiar</span>
           </button>
         </div>
 

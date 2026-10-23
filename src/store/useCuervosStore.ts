@@ -81,6 +81,8 @@ interface CuervosState {
   setFatigue: (id: string, fatigue: number) => void;
   getSmartPlanB: () => PlanBRecommendation[];
   applyPlanBToBoard: (recommendation: PlanBRecommendation) => void;
+  substitutePlayerOnBoard: (courtTokenId: string, benchPlayerId: string) => void;
+  clearDemoRosterAndLogs: () => void;
 
   // Knowledge Base & Scouting State
   tacticalCards: TacticalCard[];
@@ -211,45 +213,65 @@ export const useCuervosStore = create<CuervosState>()(
         }),
 
       loadFormation: (id, stepIndex = 0) => {
-        const formation = INITIAL_DEFENSES.find((f) => f.id === id);
+        const { formations, tokens, players } = get();
+        const formation = formations.find((f) => f.id === id) || INITIAL_DEFENSES.find((f) => f.id === id);
         if (!formation) return;
         const step = formation.pasos[stepIndex] || formation.pasos[0];
 
-        // Map coords into current tokens
-        const updatedTokens: BoardToken[] = [
-          // 5 Cuervos mapped by role
-          ...step.cuervosCoords.map((coord, idx) => {
-            const defaultToken = DEFAULT_BOARD_TOKENS[idx];
-            return {
-              ...defaultToken,
-              role: coord.role,
-              x: coord.x,
-              y: coord.y,
-            };
-          }),
-          // 5 Opponents mapped
-          ...step.opponentsCoords.map((coord, idx) => {
-            const oppToken = DEFAULT_BOARD_TOKENS[5 + idx];
-            return {
-              ...oppToken,
-              label: coord.label,
-              x: coord.x,
-              y: coord.y,
-              badge: coord.badge !== undefined ? coord.badge : oppToken.badge,
-            };
-          }),
-          // Ball
-          {
-            id: 'ball',
-            type: 'ball' as const,
-            label: '🏀',
-            x: step.ballCoords.x,
-            y: step.ballCoords.y,
-          },
-        ];
+        // Mantener a los 5 jugadores de Cuervos que están actualmente en la pizarra
+        const currentCuervosTokens = tokens.filter((t) => t.type === 'cuervos');
+        const usedTokenIds = new Set<string>();
+
+        const updatedCuervos: BoardToken[] = step.cuervosCoords.map((coord, idx) => {
+          // 1. Buscar ficha actual que tenga ese rol asignado o cuyo jugador tenga ese rolPrimario
+          let matchedToken = currentCuervosTokens.find((t) => {
+            if (usedTokenIds.has(t.id)) return false;
+            const linkedPlayer = players.find((p) => p.id === t.playerId);
+            return t.role === coord.role || linkedPlayer?.rolPrimario === coord.role;
+          });
+
+          // 2. Fallback: si hubo cambios o Plan B con roles distintos, usar la siguiente ficha disponible
+          if (!matchedToken) {
+            matchedToken = currentCuervosTokens.find((t) => !usedTokenIds.has(t.id)) || DEFAULT_BOARD_TOKENS[idx];
+          }
+
+          usedTokenIds.add(matchedToken.id);
+          const linkedPlayer = players.find((p) => p.id === matchedToken!.playerId);
+
+          return {
+            ...matchedToken,
+            role: coord.role,
+            x: coord.x,
+            y: coord.y,
+            fouls: linkedPlayer ? linkedPlayer.faltasEnVivo : (matchedToken.fouls ?? 0),
+            number: linkedPlayer ? linkedPlayer.dorsal : matchedToken.number,
+          };
+        });
+
+        const currentOpponents = tokens.filter((t) => t.type === 'opponent');
+        const updatedOpponents: BoardToken[] = step.opponentsCoords.map((coord, idx) => {
+          const oppToken = currentOpponents[idx] || DEFAULT_BOARD_TOKENS[5 + idx];
+          return {
+            ...oppToken,
+            label: coord.label,
+            x: coord.x,
+            y: coord.y,
+            badge: oppToken.badge ?? coord.badge ?? null,
+          };
+        });
 
         set({
-          tokens: updatedTokens,
+          tokens: [
+            ...updatedCuervos,
+            ...updatedOpponents,
+            {
+              id: 'ball',
+              type: 'ball',
+              label: '🏀',
+              x: step.ballCoords.x,
+              y: step.ballCoords.y,
+            },
+          ],
           activeFormationId: id,
           currentStepIndex: stepIndex,
           isWeakSideFloatActive: step.weakSideFloatActive,
@@ -342,13 +364,29 @@ export const useCuervosStore = create<CuervosState>()(
       },
 
       updatePlayer: (id, updates) =>
-        set((state) => ({
-          players: state.players.map((p) => (p.id === id ? { ...p, ...updates } : p)),
-        })),
+        set((state) => {
+          const updatedPlayers = state.players.map((p) => (p.id === id ? { ...p, ...updates } : p));
+          const target = updatedPlayers.find((p) => p.id === id);
+          const updatedTokens = state.tokens.map((t) =>
+            t.playerId === id && target
+              ? {
+                  ...t,
+                  number: target.dorsal,
+                  label: target.nombre.split(' ')[0].slice(0, 4).toUpperCase(),
+                  role: target.rolPrimario,
+                  fouls: target.faltasEnVivo,
+                }
+              : t
+          );
+          return { players: updatedPlayers, tokens: updatedTokens };
+        }),
 
       deletePlayer: (id) =>
         set((state) => ({
           players: state.players.filter((p) => p.id !== id),
+          tokens: state.tokens.map((t) =>
+            t.playerId === id ? { ...t, playerId: undefined } : t
+          ),
         })),
 
       toggleAttendance: (id) =>
@@ -365,24 +403,30 @@ export const useCuervosStore = create<CuervosState>()(
         })),
 
       incrementFouls: (id) =>
-        set((state) => ({
-          players: state.players.map((p) => {
+        set((state) => {
+          const nextPlayers = state.players.map((p) => {
             if (p.id !== id) return p;
             const nextFouls = Math.min(5, p.faltasEnVivo + 1);
-            return {
-              ...p,
-              faltasEnVivo: nextFouls,
-              enBanca: nextFouls >= 5 ? true : p.enBanca,
-            };
-          }),
-        })),
+            return { ...p, faltasEnVivo: nextFouls };
+          });
+          const target = nextPlayers.find((p) => p.id === id);
+          const nextTokens = state.tokens.map((t) =>
+            t.playerId === id && target ? { ...t, fouls: target.faltasEnVivo } : t
+          );
+          return { players: nextPlayers, tokens: nextTokens };
+        }),
 
       decrementFouls: (id) =>
-        set((state) => ({
-          players: state.players.map((p) =>
+        set((state) => {
+          const nextPlayers = state.players.map((p) =>
             p.id === id ? { ...p, faltasEnVivo: Math.max(0, p.faltasEnVivo - 1) } : p
-          ),
-        })),
+          );
+          const target = nextPlayers.find((p) => p.id === id);
+          const nextTokens = state.tokens.map((t) =>
+            t.playerId === id && target ? { ...t, fouls: target.faltasEnVivo } : t
+          );
+          return { players: nextPlayers, tokens: nextTokens };
+        }),
 
       setFatigue: (id, fatiga) =>
         set((state) => ({
@@ -391,48 +435,58 @@ export const useCuervosStore = create<CuervosState>()(
           ),
         })),
 
-      // Smart substitution engine ("Plan B")
       getSmartPlanB: () => {
-        const { players } = get();
+        const { players, tokens } = get();
         const recommendations: PlanBRecommendation[] = [];
 
-        // Identify players in trouble: Absent, 4+ fouls, or fatiga >= 75
-        const problematicPlayers = players.filter(
-          (p) => p.asistencia === 'ausente' || p.faltasEnVivo >= 4 || p.fatiga >= 75
+        // IDs de jugadores actualmente en la cancha (pizarra)
+        const onCourtPlayerIds = new Set(
+          tokens.filter((t) => t.type === 'cuervos' && t.playerId).map((t) => t.playerId as string)
         );
 
+        // Evaluar solo jugadores que son titulares o están en cancha y tienen un problema activo
+        const problematicPlayers = players.filter(
+          (p) =>
+            (onCourtPlayerIds.has(p.id) || !p.enBanca) &&
+            (p.asistencia === 'ausente' || p.faltasEnVivo >= 4 || p.fatiga >= 75)
+        );
+
+        // Identificar dinámicamente quién es el poste más alto / Ancla Central del equipo
+        const maxTeamHeight = Math.max(...players.map((p) => p.estatura), 180);
+        const usedBenchIds = new Set<string>();
+
         problematicPlayers.forEach((p) => {
-          // Available bench candidates (must be 'presente', not fouled out, not the player himself)
+          // Candidatos deben estar PRESENTES, EN LA BANCA (no en cancha) y sin problemas de faltas/fatiga
           const candidates = players.filter(
             (c) =>
               c.id !== p.id &&
+              !onCourtPlayerIds.has(c.id) &&
+              !usedBenchIds.has(c.id) &&
               c.asistencia === 'presente' &&
-              c.faltasEnVivo < 5 &&
-              c.fatiga < 80
+              c.faltasEnVivo < 4 &&
+              c.fatiga < 75
           );
 
           if (candidates.length === 0) return;
 
-          const isTallAnchor = p.rolPrimario === 'Ancla Central';
+          const isTallAnchor = p.rolPrimario === 'Ancla Central' || p.estatura === maxTeamHeight;
+
+          let reasonDesc: 'ausente' | 'faltas_4' | 'faltas_5' | 'fatiga_alta' = 'ausente';
+          if (p.asistencia === 'ausente') reasonDesc = 'ausente';
+          else if (p.faltasEnVivo === 4) reasonDesc = 'faltas_4';
+          else if (p.faltasEnVivo >= 5) reasonDesc = 'faltas_5';
+          else if (p.fatiga >= 75) reasonDesc = 'fatiga_alta';
 
           if (isTallAnchor) {
-            // CRITICAL RULE: Mateo Torres (sole tall player) is absent/fouled out!
-            // Best candidate is the one with highest defensaInteriorRebote, then resistencia, then speed
             const sortedByInsideDef = [...candidates].sort((a, b) => {
-              if (b.atributos.defensaInteriorRebote !== a.atributos.defensaInteriorRebote) {
-                return b.atributos.defensaInteriorRebote - a.atributos.defensaInteriorRebote;
-              }
-              return b.atributos.resistencia - a.atributos.resistencia;
+              const scoreA = a.atributos.defensaInteriorRebote * 0.6 + a.atributos.resistencia * 0.25 + (a.estatura / 200) * 1.5;
+              const scoreB = b.atributos.defensaInteriorRebote * 0.6 + b.atributos.resistencia * 0.25 + (b.estatura / 200) * 1.5;
+              return scoreB - scoreA;
             });
 
             const best = sortedByInsideDef[0];
-            const matchScore = Math.min(98, best.atributos.defensaInteriorRebote * 10 + 5);
-
-            let reasonDesc: 'ausente' | 'faltas_4' | 'faltas_5' | 'fatiga_alta' = 'ausente';
-            if (p.asistencia === 'ausente') reasonDesc = 'ausente';
-            else if (p.faltasEnVivo === 4) reasonDesc = 'faltas_4';
-            else if (p.faltasEnVivo >= 5) reasonDesc = 'faltas_5';
-            else if (p.fatiga >= 75) reasonDesc = 'fatiga_alta';
+            usedBenchIds.add(best.id);
+            const matchScore = Math.min(98, Math.round(best.atributos.defensaInteriorRebote * 9 + best.atributos.resistencia));
 
             recommendations.push({
               id: `rec-${p.id}-${best.id}`,
@@ -442,32 +496,19 @@ export const useCuervosStore = create<CuervosState>()(
               scoreMatch: matchScore,
               puestoCubierto: 'Ancla Central',
               esEmergenciaPosteAlto: true,
-              consejoTactico: `⚠️ ALERTA CRÍTICA: Perdimos al Ancla Central (${p.nombre}). ${best.nombre} debe ocupar el centro de la llave por su ${best.atributos.defensaInteriorRebote}/10 en Defensa Interior/Rebote. Se RECOMIENDA cambiar a Zona 1-3-1 Agresiva o 3-2 Modificada para compensar la falta de estatura con presión exterior y activar Rebote en Pandilla con los 5 jugadores cerrando el tablero.`,
+              consejoTactico: `⚠️ ALERTA CRÍTICA: Nuestro Ancla Central (${p.nombre}) no puede continuar en cancha. ${best.nombre} (#${best.dorsal}) entra a proteger la pintura (${best.atributos.defensaInteriorRebote}/10 en Def. Interior). Se recomienda pasar a Zona 1-3-1 o 3-2 para presionar líneas de pase y obligar al Rebote en Pandilla de los 5 jugadores.`,
               cambioDefensivoSugerido: '1-3-1',
             });
           } else {
-            // General player replacement
             const sorted = [...candidates].sort((a, b) => {
-              // Match by relevant attributes for perimeter/wing
-              const scoreA =
-                a.atributos.velocidad * 1.5 +
-                a.atributos.defensaExteriorRobo * 1.5 +
-                a.atributos.resistencia;
-              const scoreB =
-                b.atributos.velocidad * 1.5 +
-                b.atributos.defensaExteriorRobo * 1.5 +
-                b.atributos.resistencia;
+              const scoreA = a.atributos.velocidad * 1.5 + a.atributos.defensaExteriorRobo * 1.5 + a.atributos.resistencia;
+              const scoreB = b.atributos.velocidad * 1.5 + b.atributos.defensaExteriorRobo * 1.5 + b.atributos.resistencia;
               return scoreB - scoreA;
             });
 
             const best = sorted[0];
-            const matchScore = Math.min(95, Math.round((best.atributos.velocidad + best.atributos.defensaExteriorRobo) * 5));
-
-            let reasonDesc: 'ausente' | 'faltas_4' | 'faltas_5' | 'fatiga_alta' = 'ausente';
-            if (p.asistencia === 'ausente') reasonDesc = 'ausente';
-            else if (p.faltasEnVivo === 4) reasonDesc = 'faltas_4';
-            else if (p.faltasEnVivo >= 5) reasonDesc = 'faltas_5';
-            else if (p.fatiga >= 75) reasonDesc = 'fatiga_alta';
+            usedBenchIds.add(best.id);
+            const matchScore = Math.min(96, Math.round((best.atributos.velocidad + best.atributos.defensaExteriorRobo) * 5));
 
             recommendations.push({
               id: `rec-${p.id}-${best.id}`,
@@ -477,12 +518,52 @@ export const useCuervosStore = create<CuervosState>()(
               scoreMatch: matchScore,
               puestoCubierto: p.rolPrimario,
               esEmergenciaPosteAlto: false,
-              consejoTactico: `${best.nombre} ingresa por ${p.nombre} aportando velocidad (${best.atributos.velocidad}/10) y piernas frescas. Mantener rotación rápida y descanso por cuartos.`,
+              consejoTactico: `${best.nombre} (#${best.dorsal}) ingresa por ${p.nombre} aportando piernas frescas (${100 - best.fatiga}% energía) y velocidad (${best.atributos.velocidad}/10).`,
             });
           }
         });
 
         return recommendations;
+      },
+
+      substitutePlayerOnBoard: (courtTokenId: string, benchPlayerId: string) => {
+        const { tokens, players } = get();
+        const courtToken = tokens.find((t) => t.id === courtTokenId && t.type === 'cuervos');
+        const benchPlayer = players.find((p) => p.id === benchPlayerId);
+        if (!courtToken || !benchPlayer) return;
+
+        const prevPlayerId = courtToken.playerId;
+
+        const updatedTokens = tokens.map((t) => {
+          if (t.id === courtTokenId) {
+            return {
+              ...t,
+              playerId: benchPlayer.id,
+              number: benchPlayer.dorsal,
+              label: benchPlayer.nombre.split(' ')[0].slice(0, 4).toUpperCase(),
+              fouls: benchPlayer.faltasEnVivo,
+            };
+          }
+          return t;
+        });
+
+        const updatedPlayers = players.map((p) => {
+          if (p.id === benchPlayerId) return { ...p, enBanca: false, esTitular: true };
+          if (p.id === prevPlayerId) return { ...p, enBanca: true, esTitular: false };
+          return p;
+        });
+
+        set({ tokens: updatedTokens, players: updatedPlayers });
+      },
+
+      clearDemoRosterAndLogs: () => {
+        set({
+          matchLogs: [],
+          scoutingCards: [],
+          players: [],
+          tokens: DEFAULT_BOARD_TOKENS.map((t) => ({ ...t, playerId: undefined, fouls: 0 })),
+          drawings: [],
+        });
       },
 
       applyPlanBToBoard: (recommendation) => {

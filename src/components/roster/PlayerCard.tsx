@@ -54,7 +54,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
       {isSoleTallPlayer && (
         <div className="absolute -top-2.5 right-4 px-2 py-0.5 rounded-full bg-cuervos-cyan text-cuervos-950 font-black text-[10px] tracking-wider uppercase shadow-cyan-glow flex items-center gap-1">
           <Zap className="w-3 h-3 fill-current" />
-          <span>Único Poste Alto (1.96m)</span>
+          <span>Único Poste Alto ({(player.estatura / 100).toFixed(2)}m)</span>
         </div>
       )}
 

@@ -8,6 +8,7 @@ interface BoardTokenItemProps {
   isDrawingMode: boolean;
   onDragStart: (id: string, clientX: number, clientY: number) => void;
   onDoubleTapOpponent?: (id: string) => void;
+  onTapToken?: (id: string) => void;
   isFloating?: boolean;
 }
 
@@ -17,14 +18,27 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
   isDrawingMode,
   onDragStart,
   onDoubleTapOpponent,
+  onTapToken,
   isFloating = false,
 }) => {
   const lastTapRef = useRef<number>(0);
   const [isPressing, setIsPressing] = useState(false);
+  const downPosRef = useRef<{ x: number; y: number } | null>(null);
+  const hasMovedRef = useRef<boolean>(false);
 
-  const handlePointerDown = (e: React.PointerEvent) => {
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (isDrawingMode) return;
     e.stopPropagation();
+
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      // Ignore if capture fails in edge cases
+    }
+
+    downPosRef.current = { x: e.clientX, y: e.clientY };
+    hasMovedRef.current = false;
+    setIsPressing(true);
 
     const now = Date.now();
     const timeSinceLastTap = now - lastTapRef.current;
@@ -38,12 +52,35 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
       }
     }
 
-    setIsPressing(true);
     onDragStart(token.id, e.clientX, e.clientY);
   };
 
-  const handlePointerUp = () => {
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!downPosRef.current) return;
+    const dist = Math.hypot(e.clientX - downPosRef.current.x, e.clientY - downPosRef.current.y);
+    if (dist > 5) {
+      hasMovedRef.current = true;
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    try {
+      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      }
+    } catch {
+      // Ignore
+    }
+
     setIsPressing(false);
+
+    // If movement was less than 5px, it's a tap!
+    if (!hasMovedRef.current && onTapToken) {
+      onTapToken(token.id);
+    }
+
+    downPosRef.current = null;
+    hasMovedRef.current = false;
   };
 
   // Badge icon & styling for opponents
@@ -98,6 +135,7 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
     return (
       <div
         onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         style={{
           left: `${token.x}%`,
@@ -132,6 +170,7 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
     return (
       <div
         onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         style={{
           left: `${token.x}%`,
@@ -183,6 +222,7 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
   return (
     <div
       onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onDoubleClick={() => onDoubleTapOpponent && onDoubleTapOpponent(token.id)}
       style={{
