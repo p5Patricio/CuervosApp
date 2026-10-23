@@ -1,0 +1,183 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background & Shield Gradients -->
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#111622" />
+      <stop offset="50%" stop-color="#0A0D14" />
+      <stop offset="100%" stop-color="#06080E" />
+    </linearGradient>
+
+    <linearGradient id="cyanNeon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38F4FF" />
+      <stop offset="60%" stop-color="#00F0FF" />
+      <stop offset="100%" stop-color="#00A3B5" />
+    </linearGradient>
+
+    <linearGradient id="indigoFeather" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8" />
+      <stop offset="50%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#3730A3" />
+    </linearGradient>
+
+    <linearGradient id="ballGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FB923C" />
+      <stop offset="40%" stop-color="#EA580C" />
+      <stop offset="100%" stop-color="#9A3412" />
+    </linearGradient>
+
+    <linearGradient id="beakGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="40%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <filter id="subtleShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.8" />
+    </filter>
+  </defs>
+
+  <!-- Outer Shadow Shield -->
+  <polygon points="256,16 470,88 436,400 256,496 76,400 42,88" 
+           fill="#000000" opacity="0.6" filter="url(#subtleShadow)" />
+
+  <!-- Outer Neon Cyan Rim -->
+  <polygon points="256,20 464,90 430,396 256,490 82,396 48,90" 
+           fill="none" stroke="url(#cyanNeon)" stroke-width="8" stroke-linejoin="round" filter="url(#neonGlow)" />
+
+  <!-- Inner Dark Crest Body -->
+  <polygon points="256,28 454,95 422,390 256,480 90,390 58,95" 
+           fill="url(#shieldGrad)" stroke="#1E293B" stroke-width="3" stroke-linejoin="round" />
+
+  <!-- Carbon Fiber / Cyberpunk Tech Grid Lines in Crest -->
+  <g stroke="#162238" stroke-width="1.5" opacity="0.6">
+    <line x1="90" y1="140" x2="422" y2="140" />
+    <line x1="96" y1="200" x2="416" y2="200" />
+    <line x1="110" y1="260" x2="402" y2="260" />
+    <line x1="130" y1="320" x2="382" y2="320" />
+    <line x1="160" y1="380" x2="352" y2="380" />
+  </g>
+
+  <!-- Basketball Backdrop with Texture & Seams -->
+  <g transform="translate(256, 210)">
+    <!-- Basketball Base Circle -->
+    <circle r="128" fill="url(#ballGrad)" stroke="#111622" stroke-width="6" />
+
+    <!-- Basketball Seams -->
+    <path d="M-128,0 A128,128 0 0,0 128,0" fill="none" stroke="#0F172A" stroke-width="6" />
+    <path d="M0,-128 A128,128 0 0,0 0,128" fill="none" stroke="#0F172A" stroke-width="6" />
+    <path d="M-90,-90 Q0,-30 90,-90" fill="none" stroke="#0F172A" stroke-width="6" />
+    <path d="M-90,90 Q0,30 90,90" fill="none" stroke="#0F172A" stroke-width="6" />
+
+    <!-- Cyan rim around basketball for contrast -->
+    <circle r="128" fill="none" stroke="url(#cyanNeon)" stroke-width="2" opacity="0.6" />
+  </g>
+
+  <!-- Fierce Raven / Crow Mascot Head -->
+  <!-- Left Wing & Back Feathers (Aggressive Spikes) -->
+  <g id="ravenSpikes" fill="url(#indigoFeather)" stroke="#06080E" stroke-width="3">
+    <!-- Back Neck Spikes -->
+    <polygon points="120,230 170,210 135,270" />
+    <polygon points="105,280 160,250 120,320" />
+    <polygon points="115,330 175,290 140,360" />
+    <polygon points="150,370 210,320 180,390" />
+  </g>
+
+  <!-- Cyan Glowing Feather Highlights -->
+  <g fill="url(#cyanNeon)" opacity="0.85">
+    <polygon points="135,235 165,220 145,265" />
+    <polygon points="122,285 158,260 132,315" />
+    <polygon points="130,335 170,300 150,355" />
+  </g>
+
+  <!-- Main Raven Head Base (Deep Obsidian) -->
+  <path d="M 160,220 
+           C 180,120 280,105 340,140 
+           C 370,160 380,180 395,200 
+           L 460,240 
+           C 420,255 380,265 350,268 
+           L 358,295 
+           L 320,290 
+           L 310,325 
+           L 270,310 
+           L 260,345 
+           L 210,320 
+           L 180,350 
+           C 170,300 155,260 160,220 Z" 
+        fill="#0A0D14" stroke="#161E30" stroke-width="4" stroke-linejoin="round" />
+
+  <!-- Crown Feathers / Head Crest -->
+  <polygon points="260,112 290,75 305,120" fill="url(#cyanNeon)" />
+  <polygon points="215,125 240,88 255,130" fill="url(#indigoFeather)" />
+  <polygon points="175,150 195,110 215,155" fill="url(#cyanNeon)" />
+
+  <!-- Heavy Predatory Beak (Upper & Lower) -->
+  <path d="M 330,178 
+           C 375,190 425,215 470,245 
+           C 420,265 370,270 332,260 
+           C 342,235 340,205 330,178 Z" 
+        fill="url(#beakGrad)" stroke="#78350F" stroke-width="3" stroke-linejoin="round" />
+
+  <!-- Beak Cutting Edge & Detail -->
+  <path d="M 335,220 L 465,245" stroke="#451A03" stroke-width="3" stroke-linecap="round" />
+  <path d="M 350,195 Q 380,210 440,240" fill="none" stroke="#FEF3C7" stroke-width="2" opacity="0.7" />
+
+  <!-- Piercing Raven Eye -->
+  <g transform="translate(290, 185)">
+    <!-- Eye Socket Shadow -->
+    <polygon points="-25,-10 25,-15 15,15 -15,12" fill="#030712" />
+    <!-- Sclera / Glow -->
+    <polygon points="-20,-5 20,-8 10,8 -10,7" fill="#00F0FF" filter="url(#neonGlow)" />
+    <!-- Intense Slit Pupil -->
+    <polygon points="-6,-6 10,-7 4,6 -2,5" fill="#FFFFFF" />
+    <circle cx="2" cy="-1" r="2" fill="#000000" />
+  </g>
+
+  <!-- Cheek & Neck Razor Plumes -->
+  <path d="M 270,220 L 320,260 L 285,265 L 315,300 L 260,295 L 280,335 L 225,320" 
+        fill="none" stroke="url(#cyanNeon)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Wordmark Banner: "CUERVOS" & "BÁSKETBOL" -->
+  <g transform="translate(256, 410)">
+    <!-- Banner Plate -->
+    <polygon points="-195,-35 195,-35 215,22 180,48 -180,48 -215,22" 
+             fill="#0A0D14" stroke="url(#cyanNeon)" stroke-width="5" stroke-linejoin="round" filter="url(#subtleShadow)" />
+    <polygon points="-185,-27 185,-27 200,18 170,40 -170,40 -200,18" 
+             fill="#111622" stroke="#283654" stroke-width="2" />
+
+    <!-- Inner Accent Glow Lines on Banner -->
+    <line x1="-175" y1="-27" x2="175" y2="-27" stroke="url(#cyanNeon)" stroke-width="2" opacity="0.8" />
+    <line x1="-160" y1="40" x2="160" y2="40" stroke="#F59E0B" stroke-width="2" opacity="0.8" />
+
+    <!-- Text: CUERVOS -->
+    <text x="0" y="3" 
+          font-family="system-ui, -apple-system, 'Impact', 'Arial Black', sans-serif" 
+          font-weight="900" 
+          font-size="44" 
+          letter-spacing="6" 
+          text-anchor="middle" 
+          fill="#FFFFFF" 
+          stroke="#000000" 
+          stroke-width="1.5" 
+          style="text-transform: uppercase;">CUERVOS</text>
+
+    <!-- Subtitle: BÁSKETBOL -->
+    <text x="0" y="28" 
+          font-family="system-ui, -apple-system, 'Inter', 'Segoe UI', sans-serif" 
+          font-weight="800" 
+          font-size="14" 
+          letter-spacing="8" 
+          text-anchor="middle" 
+          fill="#00F0FF">BÁSKETBOL</text>
+  </g>
+
+  <!-- Top Accent Basketball Star / Crosshair -->
+  <g transform="translate(256, 60)" fill="#00F0FF">
+    <circle cx="0" cy="0" r="4" filter="url(#neonGlow)" />
+    <polygon points="0,-12 3,-4 12,0 3,4 0,12 -3,4 -12,0 -3,-4" />
+  </g>
+</svg>
