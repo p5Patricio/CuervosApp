@@ -17,9 +17,10 @@ Construir una Progressive Web App (PWA) táctil y local-first para el equipo de 
 - [x] `task-4`: Vista 1 (Core) - Pizarra Táctica Interactiva Full-Screen (`TacticalBoard`) con media cancha FIBA SVG, fichas arrastrables 0-100, capa de dibujo de flechas, formaciones defensivas 2-1-2 / 1-3-1 / 3-2 y creador de secuencias/frames.
 - [x] `task-5`: Vista 2 - Gestión de Plantilla y Motor de Sustituciones Inteligentes ("Plan B") (`RosterManager`) con cálculo automático de reemplazos y regla de emergencia del Ancla Central.
 - [x] `task-6`: Vista 3 - Base de Conocimiento y Bitácora de Partidos (`KnowledgeBase`) con manual táctico editable, bitácora de cuartos y scouting de rivales.
-- [/] `task-7`: Verificación completa, compilación TypeScript (`npm run build`), documentación técnica en `README.md` e inicialización/push a GitHub con `gh repo create`.
+- [x] `task-7`: Verificación completa, compilación TypeScript (`npm run build`), documentación técnica en `README.md` e inicialización/push a GitHub con `gh repo create`.
 
 ## Effective TDD Configuration
 - Mode: Functional verification and type-checking via Vite & TypeScript (`npm run build`).
 - Source: Session specification.
 - Runner: `npm run build` (Verified: Exit code 0, 9 precached PWA assets generated).
+- Remote repository: https://github.com/p5Patricio/CuervosApp
