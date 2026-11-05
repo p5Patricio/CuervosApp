@@ -34,7 +34,7 @@ export const INITIAL_SEQUENCES: PlaySequence[] = [
     tipo: 'defensiva',
     createdAt: '2026-10-18T00:00:00.000Z',
     puntosClave: [
-      'El ala baja esprinta a la esquina para que Mateo nunca tenga que salir de la pintura.',
+      'El ala baja esprinta a la esquina para que Drigo nunca tenga que salir de la pintura.',
       'El lado débil aplica la Regla del Flote cerrando al rebote.',
       'Verticalidad estricta para evitar faltas tempranas del poste.',
     ],
@@ -44,7 +44,7 @@ export const INITIAL_SEQUENCES: PlaySequence[] = [
         nombre: 'Paso 1: Balón al Centro',
         tokens: DEFAULT_BOARD_TOKENS,
         duracionMs: 1500,
-        descripcion: 'Formación base 2-1-2 compacta. Mateo en el centro de la pintura, 2 guardias arriba.',
+        descripcion: 'Formación base 2-1-2 compacta. Drigo en el centro de la pintura, 2 guardias arriba.',
       },
       {
         id: 'frame-2',
@@ -75,7 +75,7 @@ export const INITIAL_SEQUENCES: PlaySequence[] = [
           return t;
         }),
         duracionMs: 1500,
-        descripcion: 'Balón a la esquina. El alero bajo cierra el tiro; Mateo NO sale, se queda fijo cuidando el rebote del aro.',
+        descripcion: 'Balón a la esquina. El alero bajo cierra el tiro; Drigo NO sale, se queda fijo cuidando el rebote del aro.',
       },
     ],
   },

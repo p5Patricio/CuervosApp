@@ -27,3 +27,5 @@ codigo-cuervos.txt
 dtg_thumb.png
 dtg_thumb_*.png
 .agents/
+.atl/
+.claude/

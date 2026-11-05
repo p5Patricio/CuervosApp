@@ -54,7 +54,6 @@ export const FibaCourtSvg: React.FC<FibaCourtSvgProps> = ({ className = '', isWe
         stroke="#FFFFFF"
         strokeWidth="5"
         strokeLinejoin="miter"
-        filter="url(#lineGlow)"
       />
 
       {/* Half-Court Line with center circle */}

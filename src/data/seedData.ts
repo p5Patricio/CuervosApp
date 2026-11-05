@@ -3,7 +3,7 @@ import { Player, DefensiveFormation, TacticalCard, MatchRecord, RivalScoutingCar
 export const INITIAL_PLAYERS: Player[] = [
   {
     id: 'player-1',
-    nombre: 'Mateo "El Muro" Torres',
+    nombre: 'Drigo "El Muro"',
     dorsal: 15,
     estatura: 196,
     rolPrimario: 'Ancla Central',
@@ -23,7 +23,7 @@ export const INITIAL_PLAYERS: Player[] = [
   },
   {
     id: 'player-2',
-    nombre: 'Santi "Rayo" Vega',
+    nombre: 'Pato "Rayo"',
     dorsal: 7,
     estatura: 178,
     rolPrimario: 'Guardia / Base',
@@ -43,7 +43,7 @@ export const INITIAL_PLAYERS: Player[] = [
   },
   {
     id: 'player-3',
-    nombre: 'Leo "Francotirador" Morales',
+    nombre: 'Diego "Francotirador"',
     dorsal: 11,
     estatura: 182,
     rolPrimario: 'Escolta Tirador',
@@ -63,7 +63,7 @@ export const INITIAL_PLAYERS: Player[] = [
   },
   {
     id: 'player-4',
-    nombre: 'Nico "Garras" Mendoza',
+    nombre: 'Nico "Garras"',
     dorsal: 23,
     estatura: 180,
     rolPrimario: 'Ala Rápida',
@@ -83,7 +83,7 @@ export const INITIAL_PLAYERS: Player[] = [
   },
   {
     id: 'player-5',
-    nombre: 'Joaco "Perro" Roldán',
+    nombre: 'Martin "Perro"',
     dorsal: 5,
     estatura: 183,
     rolPrimario: 'Alero Bajo',
@@ -150,7 +150,7 @@ export const INITIAL_DEFENSES: DefensiveFormation[] = [
     apodo: 'Base & Ahorro de Energía (Q1 - Q3)',
     cuartosRecomendados: 'Cuartos 1, 2 y primer tramo del 3',
     objetivoPrincipal: 'Proteger la pintura y el aro con nuestro único poste alto, forzar tiros exteriores incómodos y dosificar piernas con la Regla del Flote.',
-    reglaCritica: 'El Ancla Central (Mateo #15) NUNCA sube más allá de la línea de tiros libres. El lado débil colapsa un paso hacia la pintura para descansar piernas.',
+    reglaCritica: 'El Ancla Central (Drigo #15) NUNCA sube más allá de la línea de tiros libres. El lado débil colapsa un paso hacia la pintura para descansar piernas.',
     pasos: [
       {
         name: 'Paso 1: Balón en el Centro (Cabecera)',
@@ -296,7 +296,7 @@ export const INITIAL_DEFENSES: DefensiveFormation[] = [
     apodo: 'Anti-Tiradores (Defensa de Perímetro)',
     cuartosRecomendados: 'Cuando el rival mete 2+ triples consecutivos o tienen tiradores letales',
     objetivoPrincipal: 'Contestar todos los tiros de tres puntos en cabecera y 45° sin desproteger la pintura.',
-    reglaCritica: 'Si el balón baja a la esquina del lado del jugador alto, baja el ala perimetral a puntear y Mateo se queda protegiendo la zona.',
+    reglaCritica: 'Si el balón baja a la esquina del lado del jugador alto, baja el ala perimetral a puntear y Drigo se queda protegiendo la zona.',
     pasos: [
       {
         name: 'Paso 1: Balón en el Perímetro Central',
@@ -348,7 +348,7 @@ export const INITIAL_DEFENSES: DefensiveFormation[] = [
           { role: 'Guardia / Base', x: 58, y: 52, duty: 'Cubre tiro libre y penetración' },
           { role: 'Ala Rápida', x: 40, y: 64, duty: 'Rebote del lado ciego' },
           { role: 'Escolta Tirador', x: 82, y: 76, duty: 'BAJA EL ALA: Esprinta a la esquina para que el alto no tenga que salir' },
-          { role: 'Ancla Central', x: 52, y: 72, duty: 'MATEO NUNCA SALE: Fijo cerrando el rebote del aro' },
+          { role: 'Ancla Central', x: 52, y: 72, duty: 'Drigo NUNCA SALE: Fijo cerrando el rebote del aro' },
           { role: 'Alero Bajo', x: 72, y: 78, duty: 'Niega pase directo al poste' },
         ],
         opponentsCoords: [
@@ -384,8 +384,8 @@ export const INITIAL_TACTICAL_CARDS: TacticalCard[] = [
     titulo: 'Las 3 Reglas de Oro de Cuervos',
     subtitulo: 'Fundamentos inquebrantables del equipo',
     puntosClave: [
-      '1. Rebote en Pandilla (Box-out de los 4 rápidos): Como solo tenemos 1 jugador alto, el rebote no es de Mateo, es de los 5. Los 4 exteriores deben golpear cuerpo a cuerpo y cerrar a su par.',
-      '2. Verticalidad y Cero Faltas para el Poste Alto: Mateo NO salta a bloquear fintas. Salto vertical recto con los dos brazos arriba. Un poste con 3 faltas en el 2do cuarto arruina el esquema.',
+      '1. Rebote en Pandilla (Box-out de los 4 rápidos): Como solo tenemos 1 jugador alto, el rebote no es de Drigo, es de los 5. Los 4 exteriores deben golpear cuerpo a cuerpo y cerrar a su par.',
+      '2. Verticalidad y Cero Faltas para el Poste Alto: Drigo NO salta a bloquear fintas. Salto vertical recto con los dos brazos arriba. Un poste con 3 faltas en el 2do cuarto arruina el esquema.',
       '3. Regla del Flote (Ahorro de Piernas): Cuando el balón está en la banda contraria, el defensor del lado débil da dos pasos hacia la pintura y camina. Si no tiró de 3 en todo el torneo, ¡déjalo flotar!'
     ],
     detalles: 'Si cumplimos las 3 reglas de oro en un partido, nuestra probabilidad de victoria sube más del 70% según nuestra bitácora histórica.',
@@ -396,7 +396,7 @@ export const INITIAL_TACTICAL_CARDS: TacticalCard[] = [
     titulo: 'Ajuste Inmediato ante Falta del Ancla',
     subtitulo: 'Protocolo de Emergencia "Plan B"',
     puntosClave: [
-      'Si Mateo sale por 4 faltas o cansancio, entra Tomi Benítez (#33) o Joaco Roldán (#5) a fijar el poste con box-out bajo.',
+      'Si Drigo sale por 4 faltas o cansancio, entra Tomi Benítez (#33) o Martin Roldán (#5) a fijar el poste con box-out bajo.',
       'Cambiar inmediatamente de 2-1-2 a 3-2 o 1-3-1 activa para compensar la falta de centímetros con velocidad de corte de líneas.',
       'Prohibido permitir que el poste rival reciba de espaldas a menos de 2 metros del aro: hacer 2v1 al poste alto.'
     ],
@@ -408,9 +408,9 @@ export const INITIAL_TACTICAL_CARDS: TacticalCard[] = [
     titulo: 'Ataque de 3 Segundos tras Rebote',
     subtitulo: 'Nuestra arma letal contra equipos pesados',
     puntosClave: [
-      'Pase de apertura directo hacia Santi (#7) o Nico (#23) en la línea lateral.',
+      'Pase de apertura directo hacia Pato (#7) o Nico (#23) en la línea lateral.',
       'El alero del lado contrario corre en diagonal al aro para bandeja solitaria.',
-      'Si el rival balancea rápido, no forzar penetración con choque: sacar el balón a 45° para triple con pies firmes de Leo (#11).'
+      'Si el rival balancea rápido, no forzar penetración con choque: sacar el balón a 45° para triple con pies firmes de Diego (#11).'
     ],
     detalles: 'Los equipos lentos de la liga se cansan intentando volver tras tiro fallado. Ahí ganamos los partidos.',
   },
@@ -428,7 +428,7 @@ export const INITIAL_MATCH_LOGS: MatchRecord[] = [
     defensaMasEfectiva: 'Zona 1-3-1 Agresiva',
     nivelEnergiaQ4: 'Óptima (Pudimos presionar)',
     resultado: 'Victoria',
-    notasTacticas: 'En el Q4 cambiamos a 1-3-1 y logramos 4 robos consecutivos con Nico y Santi. Mateo se cuidó de faltas y cerró 11 rebotes defensivos.',
+    notasTacticas: 'En el Q4 cambiamos a 1-3-1 y logramos 4 robos consecutivos con Nico y Pato. Drigo se cuidó de faltas y cerró 11 rebotes defensivos.',
   },
   {
     id: 'match-2',

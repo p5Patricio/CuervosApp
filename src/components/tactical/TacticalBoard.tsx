@@ -8,15 +8,16 @@ import { PlaySimulationBar } from './PlaySimulationBar';
 import { OpponentBadgeModal } from './OpponentBadgeModal';
 import { QuickTokenHud } from './QuickTokenHud';
 import { BoardToken } from '../../types';
-import { 
-  Move, 
-  PenTool, 
-  Eraser, 
-  RotateCcw, 
-  Maximize2, 
-  Minimize2, 
-  Layers, 
-  Zap
+import {
+  Move,
+  PenTool,
+  Eraser,
+  Undo2,
+  RotateCcw,
+  Maximize2,
+  Minimize2,
+  Shield,
+  PlayCircle,
 } from 'lucide-react';
 
 export const TacticalBoard: React.FC = () => {
@@ -315,9 +316,9 @@ export const TacticalBoard: React.FC = () => {
 
   const colors = [
     { name: 'Naranja Cuervos', hex: '#ED4B00' },
-    { name: 'Ámbar Jugada', hex: '#F59E0B' },
+    { name: 'Blanco Tiza', hex: '#F8FAFC' },
+    { name: 'Gris Pizarra', hex: '#94A3B8' },
     { name: 'Rojo Alerta', hex: '#EF4444' },
-    { name: 'Blanco Puro', hex: '#FFFFFF' },
   ];
 
   const ball = tokens.find((t) => t.type === 'ball');
@@ -329,151 +330,139 @@ export const TacticalBoard: React.FC = () => {
     return false;
   };
 
+  const togglePanel = (panel: 'simulacion' | 'defensas') =>
+    setActiveBottomPanel(activeBottomPanel === panel ? 'none' : panel);
+
   return (
     <div
-      className={`flex flex-col select-none transition-all touch-none overscroll-none ${
+      className={`flex flex-col select-none touch-none overscroll-none ${
         isFullScreen
-          ? 'fixed inset-0 z-50 bg-cuervos-950 w-screen h-screen p-1 sm:p-2'
-          : 'relative w-full h-[calc(100dvh-4.25rem)] sm:h-[calc(100dvh-4rem)] max-w-7xl mx-auto p-1 sm:p-2'
+          ? 'fixed inset-0 z-50 bg-cuervos-950 w-screen h-[100dvh] pb-[var(--safe-bottom)]'
+          : 'relative w-full board-viewport max-w-7xl mx-auto'
       }`}
     >
-      {/* Tactical Top Compact Toolbar */}
-      <div className="flex items-center justify-between gap-1 sm:gap-2 bg-cuervos-dark/95 backdrop-blur-md border border-cuervos-border/80 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl shadow-card z-30 mb-1 shrink-0 overflow-x-auto no-scrollbar">
-        {/* Left: Mode Toggle (Move vs Draw) */}
-        <div className="flex items-center gap-1 shrink-0">
-          <div className="bg-cuervos-elevated p-0.5 sm:p-1 rounded-lg flex items-center gap-0.5 sm:gap-1 border border-cuervos-border">
+      {/* Slim toolbar: icon-only on phones, 40px targets */}
+      <div className="flex items-center justify-between gap-1 px-1.5 sm:px-2 h-12 shrink-0 z-30">
+        <div className="flex items-center gap-1 min-w-0">
+          <div className="flex items-center rounded-xl bg-white/[0.04] p-0.5" role="group" aria-label="Modo de pizarra">
             <button
               onClick={() => setDrawingMode('move')}
-              className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 rounded-md text-xs font-bold transition-all ${
-                drawingMode === 'move'
-                  ? 'bg-cuervos-orange text-white shadow-orange-glow'
-                  : 'text-slate-400 hover:text-white'
-              }`}
+              aria-pressed={drawingMode === 'move'}
+              className="ctl-icon"
+              title="Mover fichas"
+              aria-label="Mover fichas"
             >
-              <Move className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Mover</span>
+              <Move className="w-[18px] h-[18px]" strokeWidth={1.75} />
             </button>
             <button
               onClick={() => setDrawingMode('draw')}
-              className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 rounded-md text-xs font-bold transition-all ${
-                drawingMode === 'draw'
-                  ? 'bg-cuervos-orange text-white shadow-orange-glow'
-                  : 'text-slate-400 hover:text-white'
-              }`}
+              aria-pressed={drawingMode === 'draw'}
+              className="ctl-icon"
+              title="Dibujar trazos"
+              aria-label="Dibujar trazos"
             >
-              <PenTool className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Dibujar</span>
+              <PenTool className="w-[18px] h-[18px]" strokeWidth={1.75} />
             </button>
           </div>
 
-          {/* Drawing Tools (Visible when in Draw Mode) */}
+          {/* Drawing tools (draw mode only) */}
           {drawingMode === 'draw' && (
-            <div className="flex items-center gap-1 pl-1 sm:pl-2 border-l border-cuervos-border animate-in fade-in">
-              <div className="flex items-center gap-0.5 sm:gap-1">
-                {colors.map((c) => (
-                  <button
-                    key={c.hex}
-                    onClick={() => setDrawColor(c.hex)}
+            <div className="flex items-center gap-0.5 pl-1 ml-0.5 border-l border-white/10">
+              {colors.map((c) => (
+                <button
+                  key={c.hex}
+                  onClick={() => setDrawColor(c.hex)}
+                  className="w-8 h-10 flex items-center justify-center"
+                  title={c.name}
+                  aria-label={c.name}
+                  aria-pressed={drawColor === c.hex}
+                >
+                  <span
                     style={{ backgroundColor: c.hex }}
-                    className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 transition-transform ${
-                      drawColor === c.hex ? 'scale-125 border-white shadow-md ring-2 ring-cuervos-orange/60' : 'border-slate-800'
+                    className={`block w-5 h-5 rounded-full transition-shadow ${
+                      drawColor === c.hex ? 'ring-2 ring-offset-2 ring-offset-cuervos-950 ring-cuervos-chalk' : ''
                     }`}
-                    title={c.name}
                   />
-                ))}
-              </div>
-
+                </button>
+              ))}
               <button
                 onClick={undoLastDrawing}
                 disabled={drawings.length === 0}
-                className="p-1 sm:p-1.5 rounded-md bg-cuervos-elevated text-slate-300 hover:text-white disabled:opacity-40"
+                className="ctl-icon"
                 title="Deshacer último trazo"
+                aria-label="Deshacer último trazo"
               >
-                <RotateCcw className="w-3.5 h-3.5" />
+                <Undo2 className="w-[18px] h-[18px]" strokeWidth={1.75} />
               </button>
-
               <button
                 onClick={clearDrawings}
                 disabled={drawings.length === 0}
-                className="flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-md bg-cuervos-elevated text-red-400 hover:bg-red-500/20 text-xs font-semibold disabled:opacity-40"
+                className="ctl-icon"
                 title="Limpiar todos los trazos"
+                aria-label="Limpiar todos los trazos"
               >
-                <Eraser className="w-3.5 h-3.5" />
-                <span className="hidden md:inline">Limpiar</span>
+                <Eraser className="w-[18px] h-[18px]" strokeWidth={1.75} />
               </button>
             </div>
           )}
         </div>
 
-        {/* Center / Right: Panel Toggles (Simulación vs Defensas) */}
-        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-          <div className="flex items-center bg-cuervos-elevated rounded-lg p-0.5 border border-cuervos-border">
-            <button
-              onClick={() => setActiveBottomPanel(activeBottomPanel === 'simulacion' ? 'none' : 'simulacion')}
-              className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-md text-xs font-bold transition-all ${
-                activeBottomPanel === 'simulacion'
-                  ? 'bg-cuervos-card text-cuervos-orange border border-cuervos-orange/40 shadow-sm'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Zap className="w-3.5 h-3.5 text-cuervos-orange fill-cuervos-orange" />
-              <span>Simulación 5v5</span>
-            </button>
-            <button
-              onClick={() => setActiveBottomPanel(activeBottomPanel === 'defensas' ? 'none' : 'defensas')}
-              className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-md text-xs font-bold transition-all ${
-                activeBottomPanel === 'defensas'
-                  ? 'bg-cuervos-card text-cuervos-orange border border-cuervos-orange/40 shadow-sm'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Defensas</span>
-            </button>
-          </div>
-
-          {/* Reset Tokens Button */}
-          <button
-            onClick={() => {
-              setIsPlayingSequence(false);
-              resetTokensToDefault();
-            }}
-            className="p-1 sm:p-1.5 rounded-lg bg-cuervos-elevated text-slate-400 hover:text-white hover:bg-cuervos-border border border-cuervos-border/60"
-            title="Reiniciar posiciones iniciales"
-          >
-            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </button>
-
-          {/* Fullscreen Mode Button */}
+        <div className="flex items-center gap-0.5 shrink-0">
+          {drawingMode === 'move' && (
+            <>
+              <button
+                onClick={() => togglePanel('simulacion')}
+                aria-pressed={activeBottomPanel === 'simulacion'}
+                className="ctl-icon"
+                title="Simulación de jugadas 5v5"
+                aria-label="Simulación de jugadas"
+              >
+                <PlayCircle className="w-[18px] h-[18px]" strokeWidth={1.75} />
+              </button>
+              <button
+                onClick={() => togglePanel('defensas')}
+                aria-pressed={activeBottomPanel === 'defensas'}
+                className="ctl-icon"
+                title="Sistemas defensivos"
+                aria-label="Sistemas defensivos"
+              >
+                <Shield className="w-[18px] h-[18px]" strokeWidth={1.75} />
+              </button>
+              <span className="w-px h-5 bg-white/10 mx-0.5" aria-hidden="true" />
+              <button
+                onClick={() => {
+                  setIsPlayingSequence(false);
+                  resetTokensToDefault();
+                }}
+                className="ctl-icon"
+                title="Reiniciar posiciones iniciales"
+                aria-label="Reiniciar posiciones iniciales"
+              >
+                <RotateCcw className="w-[18px] h-[18px]" strokeWidth={1.75} />
+              </button>
+            </>
+          )}
           <button
             onClick={handleToggleFullscreen}
-            className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-black transition-all border ${
-              isFullScreen
-                ? 'bg-amber-500 text-slate-950 border-amber-300 shadow-amber-glow'
-                : 'bg-cuervos-elevated text-cuervos-orange border-cuervos-orange/40 hover:bg-cuervos-border'
-            }`}
-            title="Modo Pantalla Completa Cancha"
+            aria-pressed={isFullScreen}
+            className="ctl-icon"
+            title={isFullScreen ? 'Salir de pantalla completa' : 'Cancha en pantalla completa'}
+            aria-label={isFullScreen ? 'Salir de pantalla completa' : 'Cancha en pantalla completa'}
           >
             {isFullScreen ? (
-              <>
-                <Minimize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span className="hidden sm:inline">Salir</span>
-              </>
+              <Minimize2 className="w-[18px] h-[18px]" strokeWidth={1.75} />
             ) : (
-              <>
-                <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span className="hidden sm:inline">Cancha Completa</span>
-              </>
+              <Maximize2 className="w-[18px] h-[18px]" strokeWidth={1.75} />
             )}
           </button>
         </div>
       </div>
 
-      {/* Main Court Canvas Area (Optimized to Maximize Screen Estate) */}
-      <div className="relative flex-1 w-full min-h-0 flex items-center justify-center p-0 sm:p-1 overflow-hidden touch-none overscroll-none">
+      {/* Court: full-bleed on phones, takes every remaining pixel */}
+      <div className="relative flex-1 w-full min-h-0 flex items-center justify-center sm:px-2 overflow-hidden touch-none overscroll-none">
         <div
           ref={boardContainerRef}
-          className="relative max-h-full max-w-full aspect-[1000/933] m-auto bg-cuervos-950 rounded-2xl overflow-hidden border border-cuervos-border/90 shadow-2xl touch-none-board touch-none overscroll-none"
+          className="relative max-h-full max-w-full aspect-[1000/933] m-auto bg-cuervos-950 sm:rounded-2xl overflow-hidden sm:ring-1 sm:ring-white/10 touch-none-board touch-none overscroll-none"
         >
           {/* FIBA Half-court SVG Base */}
           <FibaCourtSvg isWeakSideFloatActive={isWeakSideFloatActive} />
@@ -508,25 +497,21 @@ export const TacticalBoard: React.FC = () => {
             />
           ))}
 
-          {/* Floating Status Indicator */}
-          <div className="absolute top-2 left-2 z-10 pointer-events-none">
-            <div className="px-2.5 py-1 rounded-lg bg-cuervos-950/85 backdrop-blur-md border border-cuervos-border/70 text-[10px] text-slate-300 flex items-center gap-1.5 shadow-md">
-              <span className={`w-2 h-2 rounded-full ${isPlayingSequence ? 'bg-amber-400 animate-ping' : 'bg-cuervos-orange'}`} />
-              <span>
-                {isPlayingSequence 
-                  ? `Simulando a ${simulationSpeed}x • Pulsa Espacio para pausar`
-                  : drawingMode === 'move'
-                  ? 'Arrastra fichas • Toca para HUD • Doble tap rival para etiqueta'
-                  : 'Modo Pizarra: Dibuja flechas tácticas con el dedo'}
-              </span>
+          {/* Discreet state chip: only while simulating or drawing */}
+          {(isPlayingSequence || drawingMode === 'draw') && (
+            <div className="absolute top-2 left-2 z-10 pointer-events-none">
+              <div className="h-6 px-2 rounded-md glass text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-300 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-cuervos-orange" />
+                <span>{isPlayingSequence ? `Simulando ${simulationSpeed}x` : 'Modo dibujo'}</span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
-      {/* Bottom Floating Control Drawers (Simulation / Defenses) */}
-      {activeBottomPanel !== 'none' && (
-        <div className="mt-1 z-30 shrink-0 animate-in fade-in slide-in-from-bottom-2 duration-150">
+      {/* Compact dock (simulation / defenses); detail sheets float over the court */}
+      {activeBottomPanel !== 'none' && drawingMode === 'move' && (
+        <div className="relative z-30 shrink-0 px-1.5 sm:px-2 pt-1.5 pb-1.5">
           {activeBottomPanel === 'simulacion' && (
             <PlaySimulationBar
               sequences={sequences}

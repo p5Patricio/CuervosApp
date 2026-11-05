@@ -45,8 +45,8 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
     createdAt: '2026-11-04T00:00:00.000Z',
     puntosClave: [
       'Espaciado perimetral obligatorio: los aleros abren las esquinas para evitar ayudas defensivas.',
-      'El pívot (Mateo #15) debe hacer contacto hombro con hombro al plantar la pantalla.',
-      'El base (Santi #7) ataca hacia el carril libre dividiendo la contención rival.',
+      'El pívot (Drigo #15) debe hacer contacto hombro con hombro al plantar la pantalla.',
+      'El base (Pato #7) ataca hacia el carril libre dividiendo la contención rival.',
       'Pase de bolsillo ("pocket pass") cuando el poste rival sube a ayudar.',
     ],
     frames: [
@@ -54,7 +54,7 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
         id: 'pnr-f1',
         nombre: 'Paso 1: Inicio y Subida de Pantalla',
         duracionMs: 1800,
-        descripcion: 'Santi (#7) maneja el balón en cabecera. Mateo (#15) sube desde el poste medio para poner la pantalla directa. Tiradores abiertos a 45° y esquinas.',
+        descripcion: 'Pato (#7) maneja el balón en cabecera. Drigo (#15) sube desde el poste medio para poner la pantalla directa. Tiradores abiertos a 45° y esquinas.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 50, y: 52 },
@@ -77,7 +77,7 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
         id: 'pnr-f2',
         nombre: 'Paso 2: Contacto de Bloqueo y Desborde',
         duracionMs: 1800,
-        descripcion: 'Mateo planta el bloqueo sobre O1. Santi ataca agresivo por el hombro derecho de Mateo. O5 (poste rival) sale en contención ("drop").',
+        descripcion: 'Drigo planta el bloqueo sobre O1. Pato ataca agresivo por el hombro derecho de Drigo. O5 (poste rival) sale en contención ("drop").',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 46, y: 27 },
@@ -98,9 +98,9 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
       },
       {
         id: 'pnr-f3',
-        nombre: 'Paso 3: Penetración y Caída ("Roll") de Mateo',
+        nombre: 'Paso 3: Penetración y Caída ("Roll") de Drigo',
         duracionMs: 1800,
-        descripcion: 'Santi penetra al tiro libre atrayendo a O1 y O5. Mateo gira el pie de pivote y cae con fuerza hacia la pintura con carril abierto.',
+        descripcion: 'Pato penetra al tiro libre atrayendo a O1 y O5. Drigo gira el pie de pivote y cae con fuerza hacia la pintura con carril abierto.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 50, y: 58 },
@@ -123,7 +123,7 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
         id: 'pnr-f4',
         nombre: 'Paso 4: Pase de Bolsillo y Definición Bajo Aro',
         duracionMs: 1800,
-        descripcion: 'Santi asiste picado a las manos de Mateo en el corazón de la zona. Mateo anota bandeja o mate incontestable contra tablero.',
+        descripcion: 'Pato asiste picado a las manos de Drigo en el corazón de la zona. Drigo anota bandeja o mate incontestable contra tablero.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 50, y: 74 },
@@ -166,7 +166,7 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
         id: 'horns-f1',
         nombre: 'Paso 1: Alineación en Cuernos',
         duracionMs: 1800,
-        descripcion: 'Santi (#7) en cabecera. Mateo (#15) y Joaco (#5) en los dos codos del tiro libre. Leo (#11) y Nico (#23) en las esquinas profundas.',
+        descripcion: 'Pato (#7) en cabecera. Drigo (#15) y Martin (#5) en los dos codos del tiro libre. Diego (#11) y Nico (#23) en las esquinas profundas.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 38, y: 46 },
@@ -189,7 +189,7 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
         id: 'horns-f2',
         nombre: 'Paso 2: Doble Pantalla y Elección de Salida',
         duracionMs: 1800,
-        descripcion: 'Mateo y Joaco suben a poner doble pantalla. Santi amaga hacia la izquierda y ataca agresivo por el bloqueo derecho de Joaco.',
+        descripcion: 'Drigo y Martin suben a poner doble pantalla. Pato amaga hacia la izquierda y ataca agresivo por el bloqueo derecho de Martin.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 44, y: 26 },
@@ -210,9 +210,9 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
       },
       {
         id: 'horns-f3',
-        nombre: 'Paso 3: Caída de Mateo y Pop de Joaco',
+        nombre: 'Paso 3: Caída de Drigo y Pop de Martin',
         duracionMs: 1800,
-        descripcion: 'Mateo corta fulgurante hacia la canasta. Joaco se abre a la línea de tres ("Pop"). O2 se ve obligado a descuidar a Leo para tapar a Mateo.',
+        descripcion: 'Drigo corta fulgurante hacia la canasta. Martin se abre a la línea de tres ("Pop"). O2 se ve obligado a descuidar a Diego para tapar a Drigo.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 48, y: 64 },
@@ -235,7 +235,7 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
         id: 'horns-f4',
         nombre: 'Paso 4: Asistencia Teledirigida a la Esquina',
         duracionMs: 1800,
-        descripcion: 'Santi lee la ayuda defensiva y saca pase preciso a la esquina derecha. Leo (#11) recibe totalmente libre para clavar el triple.',
+        descripcion: 'Pato lee la ayuda defensiva y saca pase preciso a la esquina derecha. Diego (#11) recibe totalmente libre para clavar el triple.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 50, y: 74 },
@@ -278,7 +278,7 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
         id: 'gng-f1',
         nombre: 'Paso 1: Entrada y Despeje de la Pintura',
         duracionMs: 1600,
-        descripcion: 'Santi (#7) en cabecera. Mateo (#15) se sitúa en el poste bajo contrario para dejar vacía la calle central. Leo (#11) recibe a 45°.',
+        descripcion: 'Pato (#7) en cabecera. Drigo (#15) se sitúa en el poste bajo contrario para dejar vacía la calle central. Diego (#11) recibe a 45°.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 34, y: 74 },
@@ -301,7 +301,7 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
         id: 'gng-f2',
         nombre: 'Paso 2: Pase al Ala y Finta de Despiste',
         duracionMs: 1600,
-        descripcion: 'Santi pasa a Leo a 45°. Santi da un amago de retroceso y el defensor O1 comete el pecado capital: gira el cuello para ver el balón.',
+        descripcion: 'Pato pasa a Diego a 45°. Pato da un amago de retroceso y el defensor O1 comete el pecado capital: gira el cuello para ver el balón.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 34, y: 74 },
@@ -324,7 +324,7 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
         id: 'gng-f3',
         nombre: 'Paso 3: Corte Explosivo en V Hacia el Aro',
         duracionMs: 1600,
-        descripcion: '¡Cambio de ritmo fulgurante! Santi le gana la espalda a O1 cortando por la calle libre. Mateo bloquea a O5 para evitar la ayuda.',
+        descripcion: '¡Cambio de ritmo fulgurante! Pato le gana la espalda a O1 cortando por la calle libre. Drigo bloquea a O5 para evitar la ayuda.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 36, y: 74 },
@@ -347,7 +347,7 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
         id: 'gng-f4',
         nombre: 'Paso 4: Devolución y Bandeja Cómoda',
         duracionMs: 1600,
-        descripcion: 'Leo devuelve el pase en la carrera de Santi frente al tablero. Santi recibe en el aire y define con bandeja limpia contra tablero.',
+        descripcion: 'Diego devuelve el pase en la carrera de Pato frente al tablero. Pato recibe en el aire y define con bandeja limpia contra tablero.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 36, y: 74 },
@@ -381,16 +381,16 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
     createdAt: '2026-11-04T00:00:00.000Z',
     puntosClave: [
       'Inicia como un Pick & Roll central estándar para engañar a la defensa.',
-      'El tirador (Leo #11) se oculta en el tiro libre y clava un bloqueo ciego a la espalda de O5.',
-      'El pívot rival queda inmovilizado; Mateo (#15) corta libre de marca al aro.',
-      'Si el defensor del tirador ayuda al aro, Leo se abre al triple frontal ("flare").',
+      'El tirador (Diego #11) se oculta en el tiro libre y clava un bloqueo ciego a la espalda de O5.',
+      'El pívot rival queda inmovilizado; Drigo (#15) corta libre de marca al aro.',
+      'Si el defensor del tirador ayuda al aro, Diego se abre al triple frontal ("flare").',
     ],
     frames: [
       {
         id: 'spain-f1',
         nombre: 'Paso 1: Inicio y Posicionamiento Oculto',
         duracionMs: 1800,
-        descripcion: 'Santi (#7) en cabecera con balón. Mateo (#15) sube a bloquear. Leo (#11) se coloca sigilosamente en la línea de tiros libres detrás del poste rival O5.',
+        descripcion: 'Pato (#7) en cabecera con balón. Drigo (#15) sube a bloquear. Diego (#11) se coloca sigilosamente en la línea de tiros libres detrás del poste rival O5.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 52, y: 36 },
@@ -413,7 +413,7 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
         id: 'spain-f2',
         nombre: 'Paso 2: Bloqueo Directo y Activación de la Pantalla Ciega',
         duracionMs: 1800,
-        descripcion: 'Santi ataca hacia la izquierda usando el bloqueo de Mateo. Leo sube y clava una pantalla ciega por la espalda de O5 cuando este intentaba retroceder.',
+        descripcion: 'Pato ataca hacia la izquierda usando el bloqueo de Drigo. Diego sube y clava una pantalla ciega por la espalda de O5 cuando este intentaba retroceder.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 50, y: 40 },
@@ -434,9 +434,9 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
       },
       {
         id: 'spain-f3',
-        nombre: 'Paso 3: Caída Libre de Mateo y Flare de Leo',
+        nombre: 'Paso 3: Caída Libre de Drigo y Flare de Diego',
         duracionMs: 1800,
-        descripcion: 'O5 choca contra la pantalla ciega de Leo. Mateo corta libre de marca al aro. Leo se abre a la línea de 3 frontal ("Flare"). Doble ventaja ofensiva.',
+        descripcion: 'O5 choca contra la pantalla ciega de Diego. Drigo corta libre de marca al aro. Diego se abre a la línea de 3 frontal ("Flare"). Doble ventaja ofensiva.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 50, y: 68 },
@@ -459,7 +459,7 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
         id: 'spain-f4',
         nombre: 'Paso 4: Asistencia de Mate o Triple Frontal',
         duracionMs: 1800,
-        descripcion: 'Santi eleva un pase bombeado para el mate de Mateo (#15) bajo el aro. Si la defensa hubiese colapsado, el pase iba para el triple frontal de Leo.',
+        descripcion: 'Pato eleva un pase bombeado para el mate de Drigo (#15) bajo el aro. Si la defensa hubiese colapsado, el pase iba para el triple frontal de Diego.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 50, y: 76 },
@@ -502,7 +502,7 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
         id: 'motion-f1',
         nombre: 'Paso 1: Estructura 4 Abiertos y 1 Interior',
         duracionMs: 1800,
-        descripcion: 'Santi (#7) en 45° izquierdo. Nico (#23) en cabecera. Leo (#11) en 45° derecho. Joaco (#5) en esquina derecha y Mateo (#15) en poste bajo izquierdo.',
+        descripcion: 'Pato (#7) en 45° izquierdo. Nico (#23) en cabecera. Diego (#11) en 45° derecho. Martin (#5) en esquina derecha y Drigo (#15) en poste bajo izquierdo.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 32, y: 72 },
@@ -525,7 +525,7 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
         id: 'motion-f2',
         nombre: 'Paso 2: Inversión de Balón y Bloqueo Indirecto',
         duracionMs: 1800,
-        descripcion: 'Santi pasa a Nico en cabecera y corre a poner un bloqueo indirecto abajo a Leo. El defensor O2 se anticipa agresivo para cortar el pase perimetral.',
+        descripcion: 'Pato pasa a Nico en cabecera y corre a poner un bloqueo indirecto abajo a Diego. El defensor O2 se anticipa agresivo para cortar el pase perimetral.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 32, y: 72 },
@@ -548,7 +548,7 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
         id: 'motion-f3',
         nombre: 'Paso 3: Freno en Seco y Puerta Atrás ("Backdoor Cut")',
         duracionMs: 1800,
-        descripcion: 'Al ver a O2 sobre-anticipar, Leo clava el freno y corta fulgurante a su espalda hacia la pintura vacía. Nico prepara el pase picado.',
+        descripcion: 'Al ver a O2 sobre-anticipar, Diego clava el freno y corta fulgurante a su espalda hacia la pintura vacía. Nico prepara el pase picado.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 32, y: 72 },
@@ -571,7 +571,7 @@ export const FUNDAMENTAL_5V5_PLAYS: PlaySequence[] = [
         id: 'motion-f4',
         nombre: 'Paso 4: Pase Picado en el Espacio y Bandeja Invertida',
         duracionMs: 1800,
-        descripcion: 'Nico filtra un pase milimétrico al espacio. Leo atrapa a la carrera y anota bandeja invertida apoyándose con efecto en el cristal.',
+        descripcion: 'Nico filtra un pase milimétrico al espacio. Diego atrapa a la carrera y anota bandeja invertida apoyándose con efecto en el cristal.',
         tokens: [
           ...createCuervosTokens([
             { id: 'c-1', number: 15, label: 'C', role: 'Ancla Central', x: 32, y: 72 },

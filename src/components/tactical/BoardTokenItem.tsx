@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { BoardToken, OpponentBadge } from '../../types';
-import { Shield, Flame, EyeOff } from 'lucide-react';
+import { Shield, Crosshair, EyeOff } from 'lucide-react';
 
 interface BoardTokenItemProps {
   token: BoardToken;
@@ -85,49 +85,42 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
     hasMovedRef.current = false;
   };
 
-  // Badge icon & styling for opponents
+  // Opponent scouting tag: one neutral pill style, orange accent only for the main threat
   const renderOpponentBadge = (badge?: OpponentBadge | null) => {
     if (!badge) return null;
 
-    let bgClass = 'bg-slate-800 text-slate-200 border-slate-600';
     let Icon = Shield;
-    let labelText = badge;
+    let accentClass = 'text-slate-300 border-white/15';
 
     if (badge === 'Tirador Letal') {
-      bgClass = 'bg-amber-500/90 text-slate-950 font-black border-amber-300 shadow-amber-glow animate-pulse';
-      Icon = Flame;
+      Icon = Crosshair;
+      accentClass = 'text-cuervos-chalk border-cuervos-orange';
     } else if (badge === 'Flotar (No tira)') {
-      bgClass = 'bg-cyan-900/90 text-cyan-200 border-cyan-400/50';
       Icon = EyeOff;
-    } else if (badge === 'Poste Rival') {
-      bgClass = 'bg-red-800 text-white font-bold border-red-500';
-      Icon = Shield;
     }
 
     return (
       <div
-        className={`absolute -bottom-5 sm:-bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap px-1 sm:px-1.5 py-0.5 rounded text-[8px] sm:text-[10px] tracking-tight flex items-center gap-1 border shadow-lg pointer-events-none z-30 ${bgClass}`}
+        className={`absolute top-full mt-1 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 py-px rounded-md bg-cuervos-black/90 border text-[9px] sm:text-[10px] font-semibold leading-tight flex items-center gap-1 pointer-events-none z-30 ${accentClass}`}
       >
-        <Icon className="w-2 h-2 sm:w-2.5 sm:h-2.5 shrink-0" />
-        <span>{labelText}</span>
+        <Icon className={`w-2.5 h-2.5 shrink-0 ${badge === 'Tirador Letal' ? 'text-cuervos-orange' : ''}`} strokeWidth={2} />
+        <span>{badge}</span>
       </div>
     );
   };
 
-  // Foul indicators (1 to 5 dots)
-  const renderFoulDots = (fouls: number = 0) => {
+  // Foul ticks: hidden at zero, chalk until foul trouble (4+), then orange
+  const renderFoulTicks = (fouls: number = 0) => {
+    if (fouls <= 0) return null;
+    const inTrouble = fouls >= 4;
     return (
-      <div className="flex items-center justify-center gap-0.5 mt-0.5">
-        {[1, 2, 3, 4, 5].map((num) => {
-          const isCommitted = num <= fouls;
-          let dotColor = 'bg-slate-700';
-          if (isCommitted) {
-            if (num <= 2) dotColor = 'bg-emerald-400';
-            else if (num <= 3) dotColor = 'bg-amber-400';
-            else dotColor = 'bg-red-500 shadow-red-glow animate-ping';
-          }
-          return <span key={num} className={`w-1 h-1 rounded-full ${dotColor}`} />;
-        })}
+      <div className="flex items-center justify-center gap-[2px]" aria-label={`${fouls} faltas`}>
+        {Array.from({ length: Math.min(fouls, 5) }).map((_, i) => (
+          <span
+            key={i}
+            className={`w-[3px] h-[3px] rounded-full ${inTrouble ? 'bg-cuervos-orange' : 'bg-cuervos-chalk/80'}`}
+          />
+        ))}
       </div>
     );
   };
@@ -136,6 +129,7 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
   const tokenTransition = isMoving
     ? 'none'
     : 'left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)';
+  const isHeld = isPressing || isDragging;
 
   // Basketball Rendering
   if (token.type === 'ball') {
@@ -154,20 +148,22 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
         className={`absolute z-30 cursor-grab active:cursor-grabbing touch-none-board touch-none select-none ${
           isDrawingMode ? 'pointer-events-none opacity-60' : ''
         }`}
-        title="Balón Oficial (Arrastrable)"
+        title="Balón (arrastrable)"
       >
         <div
-          className={`w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-amber-500 via-orange-600 to-amber-700 border-2 border-amber-300 shadow-amber-glow flex items-center justify-center transform transition-transform duration-150 ${
-            isPressing || isDragging ? 'scale-110 ring-4 ring-orange-400/40' : 'hover:scale-110'
+          className={`w-7 h-7 sm:w-9 sm:h-9 rounded-full shadow-token transition-transform duration-150 ${
+            isHeld ? 'scale-110' : ''
           }`}
         >
-          <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center">
-            {/* Basketball Seams */}
-            <div className="absolute inset-0 border border-slate-900/60 rounded-full" />
-            <div className="absolute w-full h-0.5 bg-slate-950/70" />
-            <div className="absolute h-full w-0.5 bg-slate-950/70" />
-            <div className="text-xs sm:text-sm select-none">🏀</div>
-          </div>
+          <svg viewBox="0 0 32 32" className="w-full h-full" aria-hidden="true">
+            <circle cx="16" cy="16" r="15" fill="#ED4B00" stroke="#0A0A0C" strokeWidth="1.5" />
+            <g fill="none" stroke="#0A0A0C" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M1 16h30" />
+              <path d="M16 1v30" />
+              <path d="M5.4 5.4c3.6 2.9 5.6 6.4 5.6 10.6s-2 7.7-5.6 10.6" />
+              <path d="M26.6 5.4c-3.6 2.9-5.6 6.4-5.6 10.6s2 7.7 5.6 10.6" />
+            </g>
+          </svg>
         </div>
       </div>
     );
@@ -187,42 +183,34 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
           transform: 'translate(-50%, -50%)',
           transition: tokenTransition,
         }}
-        className={`absolute z-20 cursor-grab active:cursor-grabbing touch-none-board touch-none select-none ${
-          isDrawingMode ? 'pointer-events-none opacity-65' : ''
-        }`}
+        className={`absolute cursor-grab active:cursor-grabbing touch-none-board touch-none select-none ${
+          isHeld ? 'z-40' : 'z-20'
+        } ${isDrawingMode ? 'pointer-events-none opacity-65' : ''}`}
+        title={token.role ? `${token.label} — ${token.role}` : token.label}
       >
-        {/* Float Rule Indicator Wave */}
+        {/* Weak-side float rule: static dashed ring, no animation */}
         {isFloating && (
-          <div className="absolute -inset-2 rounded-full border border-emerald-400/60 bg-emerald-500/10 animate-ping pointer-events-none" />
+          <div className="absolute -inset-1.5 rounded-full border border-dashed border-cuervos-chalk/50 pointer-events-none" />
         )}
 
         <div
-          className={`relative w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-gradient-to-b from-cuervos-elevated to-cuervos-dark border-2 sm:border-[2.5px] border-cuervos-orange shadow-orange-glow flex flex-col items-center justify-center transform transition-transform duration-150 ${
-            isPressing || isDragging
-              ? 'scale-110 z-40 ring-4 ring-cuervos-orange/50 shadow-orange-glow-lg'
-              : 'hover:scale-105'
-          } ${isFloating ? 'ring-2 ring-emerald-400' : ''}`}
+          className={`relative w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-cuervos-black border-2 sm:border-[2.5px] border-cuervos-orange shadow-token flex items-center justify-center transition-transform duration-150 ${
+            isHeld ? 'scale-110' : ''
+          }`}
         >
           {/* Dorsal Number */}
-          <span className="text-white font-black text-xs sm:text-base leading-none font-mono">
+          <span className="font-display text-cuervos-chalk font-bold text-[15px] sm:text-xl leading-none tabular-nums tracking-normal">
             {token.number ?? '#'}
           </span>
-
-          {/* Name / Short Label */}
-          <span className="text-cuervos-orange font-bold text-[8px] sm:text-[10px] tracking-tight leading-none mt-0.5">
-            {token.label}
-          </span>
-
-          {/* Fouls Dots */}
-          {renderFoulDots(token.fouls ?? 0)}
         </div>
 
-        {/* Role Pill */}
-        {token.role && (
-          <div className="absolute -top-4 sm:-top-5 left-1/2 -translate-x-1/2 whitespace-nowrap px-1 sm:px-1.5 py-0.2 rounded bg-cuervos-950/90 text-slate-300 text-[8px] sm:text-[9px] font-medium border border-cuervos-border pointer-events-none shadow">
-            {token.role.split(' ')[0]}
-          </div>
-        )}
+        {/* Name caption + fouls */}
+        <div className="absolute top-full mt-0.5 left-1/2 -translate-x-1/2 flex flex-col items-center gap-px pointer-events-none">
+          <span className="whitespace-nowrap text-[9px] sm:text-[11px] font-semibold leading-none text-cuervos-chalk [text-shadow:0_1px_2px_rgba(0,0,0,0.9)]">
+            {token.label}
+          </span>
+          {renderFoulTicks(token.fouls ?? 0)}
+        </div>
       </div>
     );
   }
@@ -241,19 +229,17 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
         transform: 'translate(-50%, -50%)',
         transition: tokenTransition,
       }}
-      className={`absolute z-20 cursor-grab active:cursor-grabbing touch-none-board touch-none select-none ${
-        isDrawingMode ? 'pointer-events-none opacity-65' : ''
-      }`}
+      className={`absolute cursor-grab active:cursor-grabbing touch-none-board touch-none select-none ${
+        isHeld ? 'z-40' : 'z-20'
+      } ${isDrawingMode ? 'pointer-events-none opacity-65' : ''}`}
       title="Toca dos veces para cambiar etiqueta (Tirador Letal / Flotar / Poste)"
     >
       <div
-        className={`relative w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-red-600 via-cuervos-red-dark to-red-950 border-2 sm:border-[2.5px] border-red-400 shadow-red-glow flex flex-col items-center justify-center transform transition-transform duration-150 ${
-          isPressing || isDragging
-            ? 'scale-110 z-40 ring-4 ring-red-400/50 shadow-red-glow'
-            : 'hover:scale-105'
+        className={`relative w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-cuervos-chalk border-2 border-slate-400 shadow-token flex items-center justify-center transition-transform duration-150 ${
+          isHeld ? 'scale-110' : ''
         }`}
       >
-        <span className="text-white font-black text-xs sm:text-base leading-none font-mono">
+        <span className="font-display text-cuervos-black font-bold text-sm sm:text-lg leading-none tracking-normal">
           {token.label}
         </span>
       </div>
