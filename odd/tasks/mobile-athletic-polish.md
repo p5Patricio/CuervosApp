@@ -18,7 +18,7 @@ Branch: feat/mobile-athletic-polish · Delivery: ask-on-risk · Runner: `npm tes
 - [x] T3 S2-S3 wiki nav + tactical manual (inline) — 5e4d5b2
 - [x] T4 S4 match logs (inline) — 5e4d5b2
 - [x] T5 S5 scouting (inline) — 5e4d5b2
-- [x] T6 S6 roster, player card, Plan B, player modal (inline) + OpponentBadgeModal, QuickTokenHud — slice 2
+- [x] T6 S6 roster, player card, Plan B, player modal (inline) + OpponentBadgeModal, QuickTokenHud — 2300539
 - [x] T7 S8 verification: tests + build (inline) — npm test 33/33 PASSED, npm run build OK
 
 ## Log
