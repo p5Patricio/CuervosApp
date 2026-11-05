@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { useCuervosStore } from '../../store/useCuervosStore';
 import { MatchRecord } from '../../types';
-import { Trophy, Plus, BatteryCharging, Shield, Calendar, Trash2, X } from 'lucide-react';
+import { Plus, BatteryCharging, Shield, Calendar, Trash2, X } from 'lucide-react';
+
+const scoreInputClass =
+  'w-full min-h-[44px] bg-cuervos-black text-center text-base font-display font-bold tabular-nums rounded-lg border border-white/10 focus:border-cuervos-orange focus:outline-none';
 
 export const MatchLogsView: React.FC = () => {
   const { matchLogs, addMatchLog, deleteMatchLog } = useCuervosStore();
@@ -46,261 +49,211 @@ export const MatchLogsView: React.FC = () => {
     setModalOpen(false);
   };
 
+  const quarterInputs = [
+    { label: 'Q1', c: q1C, r: q1R, setC: setQ1C, setR: setQ1R },
+    { label: 'Q2', c: q2C, r: q2R, setC: setQ2C, setR: setQ2R },
+    { label: 'Q3', c: q3C, r: q3R, setC: setQ3C, setR: setQ3R },
+    { label: 'Q4', c: q4C, r: q4R, setC: setQ4C, setR: setQ4R },
+  ];
+
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-bold text-white flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-amber-400" />
-            <span>Bitácora de Partidos & Desglose por Cuartos</span>
-          </h3>
-          <p className="text-xs text-slate-400">
-            Registro de efectividad defensiva y control de fatiga en el 4to cuarto.
-          </p>
+      <div className="flex items-end justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="font-display text-2xl font-bold text-cuervos-chalk leading-none uppercase">Bitácora</h3>
+          <p className="mt-1.5 text-[13px] text-slate-400 leading-snug">Marcador por cuartos y energía en el Q4.</p>
         </div>
 
-        <button
-          onClick={() => setModalOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cuervos-elevated text-cuervos-cyan border border-cuervos-cyan/40 hover:bg-cuervos-border text-xs font-bold shadow-sm"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>Registrar Partido</span>
+        <button type="button" onClick={() => setModalOpen(true)} className="btn-primary px-3.5 shrink-0">
+          <Plus className="w-4 h-4" strokeWidth={2.25} />
+          <span>Partido</span>
         </button>
       </div>
 
-      {/* Match Cards List */}
+      {/* Match cards */}
       <div className="space-y-3">
         {matchLogs.map((m) => {
           const totC = m.q1.cuervos + m.q2.cuervos + m.q3.cuervos + m.q4.cuervos;
           const totR = m.q1.rival + m.q2.rival + m.q3.rival + m.q4.rival;
           const isWin = m.resultado === 'Victoria';
+          const quarters = [m.q1, m.q2, m.q3, m.q4];
 
           return (
-            <div
-              key={m.id}
-              className="bg-cuervos-card border border-cuervos-border/70 rounded-2xl p-5 shadow-card hover:border-cuervos-cyan/40 transition-all space-y-3"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-cuervos-border/50 pb-3">
-                <div className="flex items-center gap-3">
+            <article key={m.id} className="surface-raised p-4 sm:p-5 space-y-4">
+              {/* Result, date, delete */}
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
                   <span
-                    className={`px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider ${
-                      isWin
-                        ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/40'
-                        : 'bg-red-950 text-red-300 border border-red-500/40'
+                    className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider leading-none ${
+                      isWin ? 'bg-cuervos-orange/15 text-orange-200' : 'bg-white/5 text-slate-300'
                     }`}
                   >
+                    <span className={`w-1.5 h-1.5 rounded-full ${isWin ? 'bg-cuervos-orange' : 'bg-slate-500'}`} />
                     {m.resultado}
                   </span>
-                  <div>
-                    <h4 className="font-black text-white text-base">
-                      Cuervos <span className="font-mono text-cuervos-cyan">{totC}</span> - <span className="font-mono text-slate-300">{totR}</span> {m.equipoRival}
-                    </h4>
-                    <span className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
-                      <Calendar className="w-3 h-3 text-slate-500" />
-                      <span>{m.fecha}</span>
+                  <span className="text-xs text-slate-400 flex items-center gap-1 min-w-0">
+                    <Calendar className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
+                    <span className="truncate">{m.fecha}</span>
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => deleteMatchLog(m.id)}
+                  className="icon-btn-danger -mr-2"
+                  aria-label="Eliminar registro"
+                  title="Eliminar registro"
+                >
+                  <Trash2 className="w-4 h-4" strokeWidth={2} />
+                </button>
+              </div>
+
+              {/* Scoreboard */}
+              <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-3">
+                <div className="min-w-0">
+                  <span className="eyebrow block">Cuervos</span>
+                  <span
+                    className={`font-display font-bold tabular-nums text-4xl leading-none ${
+                      isWin ? 'text-cuervos-chalk' : 'text-slate-300'
+                    }`}
+                  >
+                    {totC}
+                  </span>
+                </div>
+                <span className="pb-1 text-slate-600 font-display text-2xl leading-none">–</span>
+                <div className="min-w-0 text-right">
+                  <span className="eyebrow block truncate">{m.equipoRival}</span>
+                  <span
+                    className={`font-display font-bold tabular-nums text-4xl leading-none ${
+                      isWin ? 'text-slate-400' : 'text-cuervos-chalk'
+                    }`}
+                  >
+                    {totR}
+                  </span>
+                </div>
+              </div>
+
+              {/* Quarter chips; Q4 (clutch) gets the accent */}
+              <div className="grid grid-cols-4 gap-1.5">
+                {quarters.map((q, idx) => (
+                  <div
+                    key={idx}
+                    className={`rounded-lg px-1 py-1.5 text-center border ${
+                      idx === 3 ? 'border-cuervos-orange/40 bg-cuervos-orange/5' : 'border-white/10 bg-cuervos-black/60'
+                    }`}
+                  >
+                    <span className={`block text-[10px] font-semibold ${idx === 3 ? 'text-orange-200' : 'text-slate-400'}`}>
+                      Q{idx + 1}
+                    </span>
+                    <span className="block font-display font-bold tabular-nums text-[15px] leading-tight text-cuervos-chalk">
+                      {q.cuervos}-{q.rival}
                     </span>
                   </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => deleteMatchLog(m.id)}
-                    className="p-1 rounded text-slate-500 hover:text-red-400 hover:bg-red-500/10"
-                    title="Eliminar registro"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
+                ))}
               </div>
 
-              {/* Quarter by Quarter Breakdown Table */}
-              <div className="grid grid-cols-5 text-center text-xs bg-cuervos-dark/70 rounded-xl p-2.5 border border-cuervos-border/40 font-mono">
-                <div>
-                  <span className="text-[10px] text-slate-400 font-sans block">1° Cuarto</span>
-                  <span className="font-bold text-white">{m.q1.cuervos} - {m.q1.rival}</span>
+              {/* Defense & energy */}
+              <dl className="space-y-2 text-[13px]">
+                <div className="flex items-start gap-2.5">
+                  <Shield className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" strokeWidth={2} />
+                  <dt className="text-slate-400 shrink-0">Defensa</dt>
+                  <dd className="text-slate-200 font-medium ml-auto text-right">{m.defensaMasEfectiva}</dd>
                 </div>
-                <div>
-                  <span className="text-[10px] text-slate-400 font-sans block">2° Cuarto</span>
-                  <span className="font-bold text-white">{m.q2.cuervos} - {m.q2.rival}</span>
+                <div className="flex items-start gap-2.5">
+                  <BatteryCharging className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" strokeWidth={2} />
+                  <dt className="text-slate-400 shrink-0">Energía Q4</dt>
+                  <dd className="text-slate-200 font-medium ml-auto text-right">{m.nivelEnergiaQ4}</dd>
                 </div>
-                <div>
-                  <span className="text-[10px] text-slate-400 font-sans block">3° Cuarto</span>
-                  <span className="font-bold text-white">{m.q3.cuervos} - {m.q3.rival}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-slate-400 font-sans block">4° Cuarto (Clutch)</span>
-                  <span className="font-bold text-amber-400">{m.q4.cuervos} - {m.q4.rival}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-slate-400 font-sans block">Total</span>
-                  <span className="font-black text-cuervos-cyan">{totC} - {totR}</span>
-                </div>
-              </div>
+              </dl>
 
-              {/* Insights: Defense & Energy */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                <div className="flex items-center gap-2 bg-cuervos-dark/50 p-2 rounded-lg border border-cuervos-border/30">
-                  <Shield className="w-4 h-4 text-cuervos-cyan shrink-0" />
-                  <span className="text-slate-400">Defensa más efectiva: </span>
-                  <strong className="text-slate-200">{m.defensaMasEfectiva}</strong>
-                </div>
-
-                <div className="flex items-center gap-2 bg-cuervos-dark/50 p-2 rounded-lg border border-cuervos-border/30">
-                  <BatteryCharging className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span className="text-slate-400">Nivel de Energía Q4: </span>
-                  <strong className="text-slate-200">{m.nivelEnergiaQ4}</strong>
-                </div>
-              </div>
-
-              {/* Tactical Notes */}
+              {/* Tactical notes */}
               {m.notasTacticas && (
-                <div className="text-xs text-slate-300 bg-cuervos-elevated/40 p-2.5 rounded-xl border border-cuervos-border/30">
-                  <strong className="text-slate-400 font-semibold block mb-0.5">Notas Tácticas del Partido:</strong>
+                <p className="pt-3 border-t border-white/10 text-[13px] text-slate-300 leading-relaxed">
                   {m.notasTacticas}
-                </div>
+                </p>
               )}
-            </div>
+            </article>
           );
         })}
       </div>
 
-      {/* Add Match Modal */}
+      {/* Add match modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
-          <form
-            onSubmit={handleSubmit}
-            className="bg-cuervos-dark border border-cuervos-border rounded-2xl w-full max-w-lg p-5 shadow-2xl max-h-[90vh] overflow-y-auto space-y-4"
-          >
-            <div className="flex items-center justify-between border-b border-cuervos-border pb-3">
-              <h3 className="font-bold text-white text-base">Registrar Nuevo Partido</h3>
-              <button
-                type="button"
-                onClick={() => setModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-cuervos-elevated"
-              >
+        <div className="modal-backdrop">
+          <form onSubmit={handleSubmit} className="modal-panel space-y-5">
+            <div className="flex items-center justify-between">
+              <h3 className="font-display text-xl font-bold uppercase text-cuervos-chalk leading-none">Nuevo partido</h3>
+              <button type="button" onClick={() => setModalOpen(false)} className="icon-btn -mr-2" aria-label="Cerrar">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Equipo Rival</label>
+                <label className="field-label">Equipo rival</label>
                 <input
                   type="text"
                   required
                   value={equipoRival}
                   onChange={(e) => setEquipoRival(e.target.value)}
                   placeholder="Ej. Búfalos del Norte"
-                  className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border focus:border-cuervos-cyan focus:outline-none"
+                  className="field"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Fecha</label>
-                <input
-                  type="text"
-                  required
-                  value={fecha}
-                  onChange={(e) => setFecha(e.target.value)}
-                  className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border focus:border-cuervos-cyan focus:outline-none"
-                />
+                <label className="field-label">Fecha</label>
+                <input type="text" required value={fecha} onChange={(e) => setFecha(e.target.value)} className="field" />
               </div>
             </div>
 
-            {/* Score by quarters */}
-            <div className="bg-cuervos-card/70 rounded-xl p-3 border border-cuervos-border/50 space-y-2">
-              <span className="text-xs font-bold text-cuervos-cyan block">Marcador por Cuartos</span>
-              <div className="grid grid-cols-4 gap-2 text-center text-xs">
-                {/* Q1 */}
-                <div>
-                  <span className="text-slate-400 text-[10px] block">Q1 (C - R)</span>
-                  <div className="flex items-center gap-1 justify-center mt-1">
-                    <input
-                      type="number"
-                      value={q1C}
-                      onChange={(e) => setQ1C(Number(e.target.value))}
-                      className="w-11 bg-cuervos-elevated text-center py-1 rounded text-white font-mono"
-                    />
-                    <span>-</span>
-                    <input
-                      type="number"
-                      value={q1R}
-                      onChange={(e) => setQ1R(Number(e.target.value))}
-                      className="w-11 bg-cuervos-elevated text-center py-1 rounded text-slate-300 font-mono"
-                    />
-                  </div>
-                </div>
-
-                {/* Q2 */}
-                <div>
-                  <span className="text-slate-400 text-[10px] block">Q2 (C - R)</span>
-                  <div className="flex items-center gap-1 justify-center mt-1">
-                    <input
-                      type="number"
-                      value={q2C}
-                      onChange={(e) => setQ2C(Number(e.target.value))}
-                      className="w-11 bg-cuervos-elevated text-center py-1 rounded text-white font-mono"
-                    />
-                    <span>-</span>
-                    <input
-                      type="number"
-                      value={q2R}
-                      onChange={(e) => setQ2R(Number(e.target.value))}
-                      className="w-11 bg-cuervos-elevated text-center py-1 rounded text-slate-300 font-mono"
-                    />
-                  </div>
-                </div>
-
-                {/* Q3 */}
-                <div>
-                  <span className="text-slate-400 text-[10px] block">Q3 (C - R)</span>
-                  <div className="flex items-center gap-1 justify-center mt-1">
-                    <input
-                      type="number"
-                      value={q3C}
-                      onChange={(e) => setQ3C(Number(e.target.value))}
-                      className="w-11 bg-cuervos-elevated text-center py-1 rounded text-white font-mono"
-                    />
-                    <span>-</span>
-                    <input
-                      type="number"
-                      value={q3R}
-                      onChange={(e) => setQ3R(Number(e.target.value))}
-                      className="w-11 bg-cuervos-elevated text-center py-1 rounded text-slate-300 font-mono"
-                    />
-                  </div>
-                </div>
-
-                {/* Q4 */}
-                <div>
-                  <span className="text-slate-400 text-[10px] block">Q4 (C - R)</span>
-                  <div className="flex items-center gap-1 justify-center mt-1">
-                    <input
-                      type="number"
-                      value={q4C}
-                      onChange={(e) => setQ4C(Number(e.target.value))}
-                      className="w-11 bg-cuervos-elevated text-center py-1 rounded text-white font-mono"
-                    />
-                    <span>-</span>
-                    <input
-                      type="number"
-                      value={q4R}
-                      onChange={(e) => setQ4R(Number(e.target.value))}
-                      className="w-11 bg-cuervos-elevated text-center py-1 rounded text-slate-300 font-mono"
-                    />
-                  </div>
-                </div>
+            {/* Score by quarters: Cuervos row on top, rival below */}
+            <fieldset className="space-y-2">
+              <div className="flex items-center justify-between">
+                <legend className="field-label mb-0">Marcador por cuartos</legend>
+                <span className="text-[11px] text-slate-500">Cuervos / Rival</span>
               </div>
-            </div>
+              <div className="grid grid-cols-4 gap-2">
+                {quarterInputs.map(({ label, c, r, setC, setR }) => (
+                  <div key={label} className="space-y-1.5">
+                    <span className="block text-center text-[11px] font-semibold text-slate-400">{label}</span>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min={0}
+                      value={c}
+                      onChange={(e) => setC(Number(e.target.value))}
+                      className={`${scoreInputClass} text-cuervos-chalk`}
+                      aria-label={`${label} Cuervos`}
+                    />
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min={0}
+                      value={r}
+                      onChange={(e) => setR(Number(e.target.value))}
+                      className={`${scoreInputClass} text-slate-400`}
+                      aria-label={`${label} Rival`}
+                    />
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-slate-400 text-right">
+                Total{' '}
+                <span className="font-display font-bold tabular-nums text-sm text-cuervos-chalk">
+                  {totalCuervos}-{totalRival}
+                </span>
+              </p>
+            </fieldset>
 
-            {/* Defense & Energy */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Defense & energy */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Defensa Más Efectiva</label>
+                <label className="field-label">Defensa más efectiva</label>
                 <select
                   value={defensaMasEfectiva}
                   onChange={(e) => setDefensaMasEfectiva(e.target.value as any)}
-                  className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border focus:border-cuervos-cyan focus:outline-none"
+                  className="field"
                 >
                   <option value="Zona 2-1-2 Compacta">Zona 2-1-2 Compacta</option>
                   <option value="Zona 1-3-1 Agresiva">Zona 1-3-1 Agresiva</option>
@@ -310,11 +263,11 @@ export const MatchLogsView: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Nivel de Energía Q4</label>
+                <label className="field-label">Energía en Q4</label>
                 <select
                   value={nivelEnergiaQ4}
                   onChange={(e) => setNivelEnergiaQ4(e.target.value as any)}
-                  className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border focus:border-cuervos-cyan focus:outline-none"
+                  className="field"
                 >
                   <option value="Óptima (Pudimos presionar)">Óptima (Pudimos presionar)</option>
                   <option value="Media (Aguantamos)">Media (Aguantamos)</option>
@@ -323,31 +276,24 @@ export const MatchLogsView: React.FC = () => {
               </div>
             </div>
 
-            {/* Tactical Notes */}
+            {/* Tactical notes */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Notas Tácticas y Claves</label>
+              <label className="field-label">Notas tácticas</label>
               <textarea
                 rows={3}
                 value={notasTacticas}
                 onChange={(e) => setNotasTacticas(e.target.value)}
-                placeholder="Anotar cómo funcionó el rebote, trampas en esquinas, etc."
-                className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border focus:border-cuervos-cyan focus:outline-none"
+                placeholder="Cómo funcionó el rebote, trampas en esquinas, etc."
+                className="field"
               />
             </div>
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-cuervos-border">
-              <button
-                type="button"
-                onClick={() => setModalOpen(false)}
-                className="px-4 py-2 text-xs text-slate-400 hover:text-white"
-              >
+            <div className="flex gap-2 pt-1">
+              <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary flex-1">
                 Cancelar
               </button>
-              <button
-                type="submit"
-                className="px-4 py-2 rounded-xl bg-cuervos-cyan text-cuervos-950 font-black text-xs shadow-cyan-glow"
-              >
-                Guardar Partido
+              <button type="submit" className="btn-primary flex-1">
+                Guardar partido
               </button>
             </div>
           </form>

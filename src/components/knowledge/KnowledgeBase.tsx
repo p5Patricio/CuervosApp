@@ -4,51 +4,35 @@ import { MatchLogsView } from './MatchLogsView';
 import { ScoutingView } from './ScoutingView';
 import { BookOpen, Trophy, Crosshair } from 'lucide-react';
 
+type SubTab = 'manual' | 'bitacora' | 'scouting';
+
+const SUB_TABS: { id: SubTab; label: string; Icon: typeof BookOpen }[] = [
+  { id: 'manual', label: 'Manual Táctico', Icon: BookOpen },
+  { id: 'bitacora', label: 'Bitácora', Icon: Trophy },
+  { id: 'scouting', label: 'Scouting', Icon: Crosshair },
+];
+
 export const KnowledgeBase: React.FC = () => {
-  const [subTab, setSubTab] = useState<'manual' | 'bitacora' | 'scouting'>('manual');
+  const [subTab, setSubTab] = useState<SubTab>('manual');
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-3 sm:p-6 space-y-6">
-      {/* Sub-tab navigation */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-cuervos-dark/80 border border-cuervos-border/70 p-3 rounded-2xl shadow-card backdrop-blur-md">
-        <div className="flex items-center gap-1.5 sm:gap-2">
+    <div className="w-full max-w-5xl mx-auto px-4 pt-4 pb-6 sm:p-6 space-y-5">
+      {/* Sub-tab navigation: single segmented control */}
+      <nav role="tablist" aria-label="Base de conocimiento" className="seg">
+        {SUB_TABS.map(({ id, label, Icon }) => (
           <button
-            onClick={() => setSubTab('manual')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-              subTab === 'manual'
-                ? 'bg-cuervos-cyan text-cuervos-950 shadow-cyan-glow'
-                : 'text-slate-400 hover:text-white hover:bg-cuervos-elevated'
-            }`}
+            key={id}
+            type="button"
+            role="tab"
+            aria-selected={subTab === id}
+            onClick={() => setSubTab(id)}
+            className="seg-item"
           >
-            <BookOpen className="w-4 h-4" />
-            <span>Manual Táctico (Wiki)</span>
+            <Icon className="w-4 h-4" strokeWidth={2} />
+            <span>{label}</span>
           </button>
-
-          <button
-            onClick={() => setSubTab('bitacora')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-              subTab === 'bitacora'
-                ? 'bg-amber-400 text-slate-950 shadow-amber-glow'
-                : 'text-slate-400 hover:text-white hover:bg-cuervos-elevated'
-            }`}
-          >
-            <Trophy className="w-4 h-4" />
-            <span>Bitácora de Partidos</span>
-          </button>
-
-          <button
-            onClick={() => setSubTab('scouting')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-              subTab === 'scouting'
-                ? 'bg-red-500 text-white shadow-red-glow'
-                : 'text-slate-400 hover:text-white hover:bg-cuervos-elevated'
-            }`}
-          >
-            <Crosshair className="w-4 h-4" />
-            <span>Scouting de Rivales</span>
-          </button>
-        </div>
-      </div>
+        ))}
+      </nav>
 
       {/* View router */}
       {subTab === 'manual' && <TacticalManualView />}

@@ -85,26 +85,35 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
     hasMovedRef.current = false;
   };
 
-  // Opponent scouting tag: one neutral pill style, orange accent only for the main threat
+  // Opponent scouting tag: compact dark pill with a short label so it never spans neighbouring tokens
   const renderOpponentBadge = (badge?: OpponentBadge | null) => {
     if (!badge) return null;
 
     let Icon = Shield;
-    let accentClass = 'text-slate-300 border-white/15';
+    let shortLabel = 'Poste';
+    let isThreat = false;
 
     if (badge === 'Tirador Letal') {
       Icon = Crosshair;
-      accentClass = 'text-cuervos-chalk border-cuervos-orange';
+      shortLabel = 'Tirador';
+      isThreat = true;
     } else if (badge === 'Flotar (No tira)') {
       Icon = EyeOff;
+      shortLabel = 'Flotar';
     }
 
     return (
       <div
-        className={`absolute top-full mt-1 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 py-px rounded-md bg-cuervos-black/90 border text-[9px] sm:text-[10px] font-semibold leading-tight flex items-center gap-1 pointer-events-none z-30 ${accentClass}`}
+        className={`absolute top-full mt-1 left-1/2 -translate-x-1/2 whitespace-nowrap pl-1 pr-1.5 py-0.5 rounded-full bg-black/80 backdrop-blur-sm border text-[10px] sm:text-[11px] font-semibold leading-none text-white flex items-center gap-1 pointer-events-none z-30 shadow-token ${
+          isThreat ? 'border-cuervos-orange' : 'border-white/20'
+        }`}
+        aria-label={badge}
       >
-        <Icon className={`w-2.5 h-2.5 shrink-0 ${badge === 'Tirador Letal' ? 'text-cuervos-orange' : ''}`} strokeWidth={2} />
-        <span>{badge}</span>
+        <Icon
+          className={`w-3 h-3 shrink-0 ${isThreat ? 'text-cuervos-orange' : 'text-slate-300'}`}
+          strokeWidth={2.25}
+        />
+        <span>{shortLabel}</span>
       </div>
     );
   };
@@ -235,11 +244,11 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
       title="Toca dos veces para cambiar etiqueta (Tirador Letal / Flotar / Poste)"
     >
       <div
-        className={`relative w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-cuervos-chalk border-2 border-slate-400 shadow-token flex items-center justify-center transition-transform duration-150 ${
+        className={`relative w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white border-2 border-slate-900 ring-1 ring-white/70 shadow-[0_2px_6px_rgba(0,0,0,0.7)] flex items-center justify-center transition-transform duration-150 ${
           isHeld ? 'scale-110' : ''
         }`}
       >
-        <span className="font-display text-cuervos-black font-bold text-sm sm:text-lg leading-none tracking-normal">
+        <span className="text-slate-950 font-black font-display text-sm sm:text-base leading-none tracking-normal">
           {token.label}
         </span>
       </div>

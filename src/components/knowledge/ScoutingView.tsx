@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useCuervosStore } from '../../store/useCuervosStore';
 import { RivalScoutingCard, OpponentBadge } from '../../types';
-import { Crosshair, Plus, Flame, EyeOff, Shield, Trash2, X } from 'lucide-react';
+import { Plus, Crosshair, EyeOff, Shield, Trash2, X, Gauge, TrendingUp, Target } from 'lucide-react';
 
 export const ScoutingView: React.FC = () => {
   const { scoutingCards, addScoutingCard, deleteScoutingCard } = useCuervosStore();
@@ -61,170 +61,142 @@ export const ScoutingView: React.FC = () => {
     setModalOpen(false);
   };
 
+  // One neutral pill style; only the lethal shooter gets the orange accent
   const getBadgeVisuals = (badge: OpponentBadge) => {
     if (badge === 'Tirador Letal') {
-      return {
-        icon: <Flame className="w-3.5 h-3.5 text-amber-400" />,
-        badgeClass: 'bg-amber-950/70 text-amber-300 border-amber-500/40',
-      };
+      return { Icon: Crosshair, label: 'Tirador letal', className: 'chip-accent', iconClass: 'text-cuervos-orange' };
     }
     if (badge === 'Flotar (No tira)') {
-      return {
-        icon: <EyeOff className="w-3.5 h-3.5 text-cyan-400" />,
-        badgeClass: 'bg-cyan-950/70 text-cyan-300 border-cyan-500/40',
-      };
+      return { Icon: EyeOff, label: 'Flotar', className: 'chip', iconClass: 'text-slate-400' };
     }
-    return {
-      icon: <Shield className="w-3.5 h-3.5 text-red-400" />,
-      badgeClass: 'bg-red-950/70 text-red-300 border-red-500/40',
-    };
+    return { Icon: Shield, label: 'Poste', className: 'chip', iconClass: 'text-slate-400' };
   };
 
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-bold text-white flex items-center gap-2">
-            <Crosshair className="w-5 h-5 text-red-400" />
-            <span>Scouting de Rivales de la Liga</span>
-          </h3>
-          <p className="text-xs text-slate-400">
-            A qué dorsales rivales dejar tirar de lejos para descansar y a quiénes hacerles trampa 2v1.
-          </p>
+      <div className="flex items-end justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="font-display text-2xl font-bold text-cuervos-chalk leading-none uppercase">Scouting</h3>
+          <p className="mt-1.5 text-[13px] text-slate-400 leading-snug">A quién flotar y a quién atacar 2v1.</p>
         </div>
 
-        <button
-          onClick={() => setModalOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cuervos-elevated text-cuervos-cyan border border-cuervos-cyan/40 hover:bg-cuervos-border text-xs font-bold shadow-sm"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>Nueva Ficha Rival</span>
+        <button type="button" onClick={() => setModalOpen(true)} className="btn-primary px-3.5 shrink-0">
+          <Plus className="w-4 h-4" strokeWidth={2.25} />
+          <span>Rival</span>
         </button>
       </div>
 
-      {/* Rival Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Rival cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
         {scoutingCards.map((scout) => (
-          <div
-            key={scout.id}
-            className="bg-cuervos-card border border-cuervos-border/70 rounded-2xl p-5 shadow-card hover:border-red-500/40 transition-all space-y-4"
-          >
-            <div className="flex items-start justify-between gap-3 border-b border-cuervos-border/50 pb-3">
-              <div>
-                <h4 className="font-black text-white text-lg">{scout.nombreEquipo}</h4>
-                <div className="flex flex-wrap items-center gap-2 mt-1">
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-cuervos-elevated text-slate-300 border border-cuervos-border">
+          <article key={scout.id} className="surface-raised p-4 sm:p-5 space-y-4">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <h4 className="font-display text-xl font-bold uppercase text-cuervos-chalk leading-tight">
+                  {scout.nombreEquipo}
+                </h4>
+                <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                  <span className="chip">
+                    <Gauge className="w-3.5 h-3.5 text-slate-400" strokeWidth={2} />
                     {scout.ritmoDeJuego}
                   </span>
-                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-indigo-950/70 text-indigo-300 border border-indigo-500/40">
-                    Defensa sugerida: Zona {scout.defensaSugerida}
+                  <span className="chip-accent">
+                    <Shield className="w-3.5 h-3.5" strokeWidth={2} />
+                    Zona {scout.defensaSugerida}
                   </span>
                 </div>
               </div>
 
               <button
+                type="button"
                 onClick={() => deleteScoutingCard(scout.id)}
-                className="p-1 rounded text-slate-500 hover:text-red-400 hover:bg-red-500/10"
+                className="icon-btn-danger -mr-2 -mt-1.5"
+                aria-label="Eliminar ficha de scouting"
                 title="Eliminar ficha de scouting"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-4 h-4" strokeWidth={2} />
               </button>
             </div>
 
-            {/* Key Players Targeted */}
-            <div>
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
-                Instrucciones Específicas por Jugador Rival:
-              </span>
-              <div className="space-y-2">
-                {scout.jugadoresClave.map((k, idx) => {
-                  const visuals = getBadgeVisuals(k.etiqueta);
-                  return (
-                    <div
-                      key={idx}
-                      className="bg-cuervos-dark/80 p-2.5 rounded-xl border border-cuervos-border/40 flex items-start justify-between gap-3 text-xs"
-                    >
-                      <div className="flex items-start gap-2.5">
-                        <div className="w-7 h-7 rounded-lg bg-red-950 border border-red-500/50 flex items-center justify-center text-red-300 font-mono font-black shrink-0">
-                          #{k.dorsal}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-1.5 mb-1">
-                            <span
-                              className={`px-1.5 py-0.2 rounded text-[10px] font-black uppercase tracking-wider border flex items-center gap-1 ${visuals.badgeClass}`}
-                            >
-                              {visuals.icon}
-                              <span>{k.etiqueta}</span>
-                            </span>
-                          </div>
-                          <p className="text-slate-300 leading-tight">{k.instruccionDefensiva}</p>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+            {/* Strengths and weaknesses */}
+            <dl className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-2">
+              <div className="rounded-xl bg-cuervos-black/60 border border-white/10 p-3">
+                <dt className="eyebrow flex items-center gap-1.5 mb-1">
+                  <TrendingUp className="w-3.5 h-3.5" strokeWidth={2} />
+                  Fortaleza
+                </dt>
+                <dd className="text-[13px] text-slate-200 leading-snug">{scout.fortaleza || '—'}</dd>
               </div>
-            </div>
+              <div className="rounded-xl bg-cuervos-black/60 border border-cuervos-orange/25 p-3">
+                <dt className="eyebrow flex items-center gap-1.5 mb-1 text-orange-200">
+                  <Target className="w-3.5 h-3.5" strokeWidth={2} />
+                  Dónde atacar
+                </dt>
+                <dd className="text-[13px] text-slate-200 leading-snug">{scout.debilidadAExplotar || '—'}</dd>
+              </div>
+            </dl>
 
-            {/* Strengths and Weaknesses */}
-            <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-cuervos-border/30">
-              <div className="bg-cuervos-dark/50 p-2 rounded-lg border border-cuervos-border/20">
-                <span className="text-slate-400 text-[10px] font-bold block mb-0.5">Su Fortaleza:</span>
-                <span className="text-slate-200">{scout.fortaleza}</span>
+            {/* Key rival players */}
+            {scout.jugadoresClave.length > 0 && (
+              <div>
+                <span className="eyebrow block mb-2">Jugadores clave</span>
+                <ul className="space-y-2">
+                  {scout.jugadoresClave.map((k, idx) => {
+                    const { Icon, label, className, iconClass } = getBadgeVisuals(k.etiqueta);
+                    return (
+                      <li key={idx} className="flex items-start gap-3">
+                        {/* Dorsal disc mirrors the opponent token on the board */}
+                        <span className="w-9 h-9 shrink-0 rounded-full bg-white border-2 border-slate-900 flex items-center justify-center font-display font-black text-sm text-slate-950 tabular-nums">
+                          {k.dorsal}
+                        </span>
+                        <div className="min-w-0 pt-0.5">
+                          <span className={className}>
+                            <Icon className={`w-3.5 h-3.5 ${iconClass}`} strokeWidth={2} />
+                            {label}
+                          </span>
+                          <p className="mt-1.5 text-[13px] text-slate-300 leading-relaxed">{k.instruccionDefensiva}</p>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
               </div>
-              <div className="bg-cuervos-dark/50 p-2 rounded-lg border border-emerald-500/20">
-                <span className="text-emerald-400 text-[10px] font-bold block mb-0.5">Dónde Lastimarlos:</span>
-                <span className="text-emerald-200">{scout.debilidadAExplotar}</span>
-              </div>
-            </div>
+            )}
 
             {scout.notas && (
-              <p className="text-[11px] text-slate-400 italic bg-cuervos-elevated/30 p-2 rounded-lg border border-cuervos-border/20">
-                "{scout.notas}"
-              </p>
+              <p className="pt-3 border-t border-white/10 text-[13px] text-slate-400 leading-relaxed">{scout.notas}</p>
             )}
-          </div>
+          </article>
         ))}
       </div>
 
-      {/* Add Scouting Modal */}
+      {/* Add scouting modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
-          <form
-            onSubmit={handleSubmit}
-            className="bg-cuervos-dark border border-cuervos-border rounded-2xl w-full max-w-lg p-5 shadow-2xl max-h-[90vh] overflow-y-auto space-y-4"
-          >
-            <div className="flex items-center justify-between border-b border-cuervos-border pb-3">
-              <h3 className="font-bold text-white text-base">Crear Ficha de Scouting de Rival</h3>
-              <button
-                type="button"
-                onClick={() => setModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-cuervos-elevated"
-              >
+        <div className="modal-backdrop">
+          <form onSubmit={handleSubmit} className="modal-panel space-y-5">
+            <div className="flex items-center justify-between">
+              <h3 className="font-display text-xl font-bold uppercase text-cuervos-chalk leading-none">Nueva ficha rival</h3>
+              <button type="button" onClick={() => setModalOpen(false)} className="icon-btn -mr-2" aria-label="Cerrar">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Nombre del Equipo</label>
+                <label className="field-label">Equipo</label>
                 <input
                   type="text"
                   required
                   value={nombreEquipo}
                   onChange={(e) => setNombreEquipo(e.target.value)}
                   placeholder="Ej. Toros del Valle"
-                  className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border focus:border-cuervos-cyan focus:outline-none"
+                  className="field"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Ritmo de Juego</label>
-                <select
-                  value={ritmoDeJuego}
-                  onChange={(e) => setRitmoDeJuego(e.target.value as any)}
-                  className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border focus:border-cuervos-cyan focus:outline-none"
-                >
+                <label className="field-label">Ritmo de juego</label>
+                <select value={ritmoDeJuego} onChange={(e) => setRitmoDeJuego(e.target.value as any)} className="field">
                   <option value="Rápido y alocado">Rápido y alocado</option>
                   <option value="Pausado y físico">Pausado y físico</option>
                   <option value="Perimetral / Triplero">Perimetral / Triplero</option>
@@ -232,133 +204,125 @@ export const ScoutingView: React.FC = () => {
               </div>
             </div>
 
-            {/* Targeted Players Sub-form */}
-            <div className="bg-cuervos-card/70 rounded-xl p-3 border border-cuervos-border/50 space-y-2">
-              <span className="text-xs font-bold text-slate-200 block">Identificar Jugadores Clave</span>
+            {/* Key players sub-form */}
+            <fieldset className="rounded-xl border border-white/10 bg-cuervos-black/40 p-3 space-y-3">
+              <legend className="px-1 text-xs font-semibold text-slate-300">Jugadores clave</legend>
 
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-[5rem_1fr] gap-2">
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Dorsal (#)</label>
+                  <label className="field-label">Dorsal</label>
                   <input
                     type="number"
+                    inputMode="numeric"
                     value={keyDorsal}
                     onChange={(e) => setKeyDorsal(Number(e.target.value))}
-                    className="w-full bg-cuervos-elevated text-white text-xs px-2 py-1.5 rounded-lg border border-cuervos-border font-mono"
+                    className="field text-center font-display font-bold tabular-nums"
                   />
                 </div>
-                <div className="col-span-2">
-                  <label className="block text-[10px] text-slate-400 mb-1">Etiqueta Táctica</label>
-                  <select
-                    value={keyBadge}
-                    onChange={(e) => setKeyBadge(e.target.value as any)}
-                    className="w-full bg-cuervos-elevated text-white text-xs px-2 py-1.5 rounded-lg border border-cuervos-border"
-                  >
-                    <option value="Tirador Letal">Tirador Letal (Cubrir de cerca)</option>
-                    <option value="Flotar (No tira)">Flotar (No tira - Dejar tirar)</option>
-                    <option value="Poste Rival">Poste Rival (Box-out doble)</option>
+                <div>
+                  <label className="field-label">Etiqueta</label>
+                  <select value={keyBadge} onChange={(e) => setKeyBadge(e.target.value as any)} className="field">
+                    <option value="Tirador Letal">Tirador Letal (cubrir de cerca)</option>
+                    <option value="Flotar (No tira)">Flotar (dejar tirar)</option>
+                    <option value="Poste Rival">Poste Rival (box-out doble)</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] text-slate-400 mb-1">Instrucción para el equipo</label>
+                <label className="field-label">Instrucción</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={keyInstruction}
                     onChange={(e) => setKeyInstruction(e.target.value)}
-                    placeholder="Ej. Flotarle 2 metros; si penetra se le dobla el alto."
-                    className="flex-1 bg-cuervos-elevated text-white text-xs px-2 py-1.5 rounded-lg border border-cuervos-border"
+                    placeholder="Ej. Flotarle 2 metros"
+                    className="field flex-1 min-w-0"
                   />
                   <button
                     type="button"
                     onClick={handleAddPlayer}
-                    className="px-3 py-1.5 rounded-lg bg-cuervos-cyan text-cuervos-950 font-bold text-xs"
+                    className="btn-secondary w-11 px-0 min-h-[44px] shrink-0"
+                    aria-label="Añadir jugador"
                   >
-                    + Añadir
+                    <Plus className="w-4 h-4" strokeWidth={2.25} />
                   </button>
                 </div>
               </div>
 
-              {/* Added players list */}
+              {/* Added players */}
               {playersList.length > 0 && (
-                <div className="space-y-1 pt-2">
+                <ul className="space-y-1.5">
                   {playersList.map((p, i) => (
-                    <div key={i} className="flex items-center justify-between text-xs bg-cuervos-dark p-1.5 rounded-lg border border-cuervos-border/40">
-                      <span>#{p.dorsal} ({p.etiqueta}): {p.instruccionDefensiva}</span>
+                    <li
+                      key={i}
+                      className="flex items-center gap-2 text-[13px] bg-cuervos-dark rounded-lg border border-white/10 pl-2 pr-1 py-1"
+                    >
+                      <span className="font-display font-bold tabular-nums text-cuervos-chalk">#{p.dorsal}</span>
+                      <span className="min-w-0 flex-1 truncate text-slate-300">{p.instruccionDefensiva}</span>
                       <button
                         type="button"
                         onClick={() => handleRemovePlayer(i)}
-                        className="text-red-400 hover:text-red-300 ml-2"
+                        className="icon-btn-danger w-9 h-9"
+                        aria-label={`Quitar dorsal ${p.dorsal}`}
                       >
-                        ×
+                        <X className="w-4 h-4" />
                       </button>
-                    </div>
+                    </li>
                   ))}
-                </div>
+                </ul>
               )}
-            </div>
+            </fieldset>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Mayor Fortaleza</label>
+                <label className="field-label">Mayor fortaleza</label>
                 <input
                   type="text"
                   value={fortaleza}
                   onChange={(e) => setFortaleza(e.target.value)}
-                  placeholder="Ej. Tiran muchos triples de esquina"
-                  className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border"
+                  placeholder="Ej. Triples de esquina"
+                  className="field"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Debilidad a Explotar</label>
+                <label className="field-label">Debilidad a explotar</label>
                 <input
                   type="text"
                   value={debilidadAExplotar}
                   onChange={(e) => setDebilidadAExplotar(e.target.value)}
-                  placeholder="Ej. Se cansan en el Q4 si corremos"
-                  className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border"
+                  placeholder="Ej. Se cansan en el Q4"
+                  className="field"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Defensa Sugerida para Cuervos</label>
-              <select
-                value={defensaSugerida}
-                onChange={(e) => setDefensaSugerida(e.target.value as any)}
-                className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border"
-              >
-                <option value="2-1-2">Zona 2-1-2 Compacta (Ahorro de energía)</option>
-                <option value="1-3-1">Zona 1-3-1 Agresiva (Sorpresa y trampas)</option>
-                <option value="3-2">Zona 3-2 Modificada (Anti-tiradores)</option>
+              <label className="field-label">Defensa sugerida</label>
+              <select value={defensaSugerida} onChange={(e) => setDefensaSugerida(e.target.value as any)} className="field">
+                <option value="2-1-2">Zona 2-1-2 Compacta (ahorro de energía)</option>
+                <option value="1-3-1">Zona 1-3-1 Agresiva (sorpresa y trampas)</option>
+                <option value="3-2">Zona 3-2 Modificada (anti-tiradores)</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Notas Adicionales</label>
+              <label className="field-label">Notas</label>
               <input
                 type="text"
                 value={notas}
                 onChange={(e) => setNotas(e.target.value)}
-                placeholder="Ej. Les cuesta salir de la presión si forzamos al poste a botar"
-                className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border"
+                placeholder="Ej. Les cuesta salir de la presión"
+                className="field"
               />
             </div>
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-cuervos-border">
-              <button
-                type="button"
-                onClick={() => setModalOpen(false)}
-                className="px-4 py-2 text-xs text-slate-400 hover:text-white"
-              >
+            <div className="flex gap-2 pt-1">
+              <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary flex-1">
                 Cancelar
               </button>
-              <button
-                type="submit"
-                className="px-4 py-2 rounded-xl bg-cuervos-cyan text-cuervos-950 font-black text-xs shadow-cyan-glow"
-              >
-                Guardar Scouting
+              <button type="submit" className="btn-primary flex-1">
+                Guardar scouting
               </button>
             </div>
           </form>

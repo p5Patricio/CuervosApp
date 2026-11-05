@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useCuervosStore } from '../../store/useCuervosStore';
 import { TacticalCard } from '../../types';
-import { BookOpen, Plus, CheckCircle2, Star, Shield, Zap, Wind, Edit3, Trash2, X } from 'lucide-react';
+import { Plus, CheckCircle2, Star, Shield, Zap, Wind, Edit3, Trash2, X } from 'lucide-react';
 
 export const TacticalManualView: React.FC = () => {
   const { tacticalCards, addTacticalCard, updateTacticalCard, deleteTacticalCard } = useCuervosStore();
@@ -62,126 +62,134 @@ export const TacticalManualView: React.FC = () => {
     setModalOpen(false);
   };
 
+  // Single accent color across sections; the icon shape carries the meaning
   const getSectionIcon = (sec: string) => {
+    const cls = 'w-[18px] h-[18px] text-cuervos-orange';
     switch (sec) {
       case 'dosificacion':
-        return <Zap className="w-5 h-5 text-amber-400" />;
+        return <Zap className={cls} strokeWidth={2} />;
       case 'reglas_de_oro':
-        return <Star className="w-5 h-5 text-cuervos-cyan fill-cuervos-cyan/20" />;
+        return <Star className={cls} strokeWidth={2} />;
       case 'defensas':
-        return <Shield className="w-5 h-5 text-indigo-400" />;
+        return <Shield className={cls} strokeWidth={2} />;
       default:
-        return <Wind className="w-5 h-5 text-emerald-400" />;
+        return <Wind className={cls} strokeWidth={2} />;
     }
+  };
+
+  const SECTION_LABELS: Record<string, string> = {
+    reglas_de_oro: 'Regla de oro',
+    dosificacion: 'Dosificación',
+    defensas: 'Defensa',
+    contraataque: 'Transición',
   };
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-bold text-white flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-cuervos-cyan" />
-            <span>Manual Táctico Interactivo de Cuervos</span>
+      {/* Header: title block and compact action on one row */}
+      <div className="flex items-end justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="font-display text-2xl font-bold text-cuervos-chalk leading-none uppercase">
+            Manual Táctico
           </h3>
-          <p className="text-xs text-slate-400">
-            Principios irremplazables de nuestro estilo de juego en canchas exteriores techadas.
+          <p className="mt-1.5 text-[13px] text-slate-400 leading-snug">
+            Principios de nuestro estilo de juego.
           </p>
         </div>
 
-        <button
-          onClick={handleOpenAdd}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cuervos-elevated text-cuervos-cyan border border-cuervos-cyan/40 hover:bg-cuervos-border text-xs font-bold shadow-sm"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>Agregar Principio</span>
+        <button type="button" onClick={handleOpenAdd} className="btn-primary px-3.5 shrink-0">
+          <Plus className="w-4 h-4" strokeWidth={2.25} />
+          <span>Principio</span>
         </button>
       </div>
 
-      {/* Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
         {tacticalCards.map((card) => (
-          <div
-            key={card.id}
-            className="bg-cuervos-card border border-cuervos-border/70 rounded-2xl p-5 shadow-card hover:border-cuervos-cyan/50 transition-all flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-start justify-between gap-3 mb-2">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-xl bg-cuervos-dark border border-cuervos-border">
-                    {getSectionIcon(card.seccion)}
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-white text-base leading-snug">{card.titulo}</h4>
-                    <span className="text-xs text-slate-400">{card.subtitulo}</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => handleOpenEdit(card)}
-                    className="p-1 rounded text-slate-400 hover:text-white hover:bg-cuervos-elevated"
-                    title="Editar principio"
-                  >
-                    <Edit3 className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    onClick={() => deleteTacticalCard(card.id)}
-                    className="p-1 rounded text-slate-500 hover:text-red-400 hover:bg-red-500/10"
-                    title="Eliminar"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+          <article key={card.id} className="surface-raised p-4 sm:p-5 flex flex-col">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 shrink-0 rounded-xl bg-cuervos-orange/10 border border-cuervos-orange/25 flex items-center justify-center">
+                {getSectionIcon(card.seccion)}
               </div>
 
-              {/* Bullet Points */}
-              <ul className="space-y-2 mt-3 text-xs text-slate-200">
-                {card.puntosClave.map((pt, idx) => (
-                  <li key={idx} className="flex items-start gap-2 bg-cuervos-dark/60 p-2.5 rounded-xl border border-cuervos-border/30">
-                    <CheckCircle2 className="w-4 h-4 text-cuervos-cyan shrink-0 mt-0.5" />
-                    <span className="leading-relaxed">{pt}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="min-w-0 flex-1 pt-0.5">
+                <span className="eyebrow">{SECTION_LABELS[card.seccion] ?? card.seccion}</span>
+                <h4 className="mt-0.5 font-semibold text-cuervos-chalk text-[15px] leading-snug">{card.titulo}</h4>
+                {card.subtitulo && (
+                  <p className="mt-0.5 text-[13px] text-slate-400 leading-snug">{card.subtitulo}</p>
+                )}
+              </div>
+
+              <div className="flex items-center -mr-2 -mt-1.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => handleOpenEdit(card)}
+                  className="icon-btn"
+                  aria-label="Editar principio"
+                  title="Editar principio"
+                >
+                  <Edit3 className="w-4 h-4" strokeWidth={2} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => deleteTacticalCard(card.id)}
+                  className="icon-btn-danger"
+                  aria-label="Eliminar principio"
+                  title="Eliminar"
+                >
+                  <Trash2 className="w-4 h-4" strokeWidth={2} />
+                </button>
+              </div>
             </div>
 
-            {/* Bottom Insight */}
+            {/* Key points */}
+            <ul className="mt-4 space-y-2.5">
+              {card.puntosClave.map((pt, idx) => (
+                <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-200 leading-relaxed">
+                  <CheckCircle2 className="w-4 h-4 text-cuervos-orange shrink-0 mt-[3px]" strokeWidth={2} />
+                  <span>{pt}</span>
+                </li>
+              ))}
+            </ul>
+
+            {/* Bottom insight */}
             {card.detalles && (
-              <div className="mt-4 pt-3 border-t border-cuervos-border/40 text-[11px] text-slate-400 italic">
-                "{card.detalles}"
-              </div>
+              <p className="mt-4 pt-3 border-t border-white/10 text-[13px] text-slate-400 leading-relaxed">
+                {card.detalles}
+              </p>
             )}
-          </div>
+          </article>
         ))}
       </div>
 
       {/* Add / Edit Card Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
+        <div className="modal-backdrop">
           <form
             onSubmit={handleSave}
-            className="bg-cuervos-dark border border-cuervos-border rounded-2xl w-full max-w-lg p-5 shadow-2xl space-y-4"
+            className="modal-panel space-y-5"
           >
-            <div className="flex items-center justify-between border-b border-cuervos-border pb-3">
-              <h3 className="font-bold text-white text-base">
+            <div className="flex items-center justify-between">
+              <h3 className="font-display text-xl font-bold uppercase text-cuervos-chalk leading-none">
                 {editingCard ? 'Editar Tarjeta Táctica' : 'Nueva Tarjeta del Manual'}
               </h3>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-cuervos-elevated"
+                className="icon-btn -mr-2"
+                aria-label="Cerrar"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Categoría</label>
+                <label className="field-label">Categoría</label>
                 <select
                   value={seccion}
                   onChange={(e) => setSeccion(e.target.value as any)}
-                  className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border focus:border-cuervos-cyan focus:outline-none"
+                  className="field"
                 >
                   <option value="reglas_de_oro">Reglas de Oro</option>
                   <option value="dosificacion">Dosificación por Cuartos</option>
@@ -191,30 +199,30 @@ export const TacticalManualView: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Título</label>
+                <label className="field-label">Título</label>
                 <input
                   type="text"
                   required
                   value={titulo}
                   onChange={(e) => setTitulo(e.target.value)}
                   placeholder="Ej. Salto Vertical Sin Faltas"
-                  className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border focus:border-cuervos-cyan focus:outline-none"
+                  className="field"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Subtítulo / Objetivo</label>
+                <label className="field-label">Subtítulo / Objetivo</label>
                 <input
                   type="text"
                   value={subtitulo}
                   onChange={(e) => setSubtitulo(e.target.value)}
                   placeholder="Ej. Protección del poste alto en los primeros cuartos"
-                  className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border focus:border-cuervos-cyan focus:outline-none"
+                  className="field"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="field-label">
                   Puntos Clave (uno por línea)
                 </label>
                 <textarea
@@ -223,33 +231,33 @@ export const TacticalManualView: React.FC = () => {
                   value={puntosRaw}
                   onChange={(e) => setPuntosRaw(e.target.value)}
                   placeholder="Línea 1...&#10;Línea 2...&#10;Línea 3..."
-                  className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border focus:border-cuervos-cyan focus:outline-none"
+                  className="field"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Nota Táctica / Por qué</label>
+                <label className="field-label">Nota Táctica / Por qué</label>
                 <input
                   type="text"
                   value={detalles}
                   onChange={(e) => setDetalles(e.target.value)}
                   placeholder="Ej. Con 3 faltas en el 2do cuarto perdemos el ancla defensiva."
-                  className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border focus:border-cuervos-cyan focus:outline-none"
+                  className="field"
                 />
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-cuervos-border">
+            <div className="flex gap-2 pt-1">
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="px-4 py-2 text-xs text-slate-400 hover:text-white"
+                className="btn-secondary flex-1"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 rounded-xl bg-cuervos-cyan text-cuervos-950 font-black text-xs shadow-cyan-glow"
+                className="btn-primary flex-1"
               >
                 Guardar Principio
               </button>
