@@ -20,7 +20,7 @@
 **CuervosApp** es una herramienta táctica y de sustituciones de alto rendimiento diseñada específicamente para el contexto competitivo del equipo de básquetbol **"Cuervos"**:
 - **Contexto de Plantilla**: Contamos con **1 único jugador alto** (*Ancla Central*, Mateo #15, 1.96m) y el resto del equipo somos de estatura promedio pero dotados de una velocidad descomunal.
 - **Contexto de Cancha**: Disputamos la liga en **cancha techada al aire libre** de medidas reglamentarias (28m x 15m), con alta propensión a la fatiga en el último cuarto debido a la temperatura y el desgaste físico.
-- **Enfoque Visual**: Modo oscuro de **alto contraste** (Obsidiana `#0A0D14`, Cian Eléctrico `#00F0FF`, Índigo Cuervo `#6366F1`, Ámbar Balón `#F59E0B` y Rojo Intenso Rival `#EF4444`) formulado para máxima legibilidad bajo el sol y las luminarias de la cancha.
+- **Enfoque Visual**: Modo oscuro de **alto contraste** (Negro Obsidiana `#050505` / `#0A0A0C`, Naranja Básquetbol Reglamentario `#ED4B00`, Blanco Puro `#FFFFFF` y Rojo Intenso Rival `#EF4444`) formulado para máxima legibilidad bajo el sol y las luminarias de la cancha.
 
 ---
 
@@ -40,7 +40,17 @@
   - **Zona 2-1-2 Compacta (Base Q1-Q3)**: Con simulación visual activa de la **Regla del Flote** (el defensor del lado débil se cierra 2 metros a la llave ahorrando piernas).
   - **Zona 1-3-1 Agresiva (Sorpresa Q4)**: Trampas dobles 2v1 en cabecera, bandas y esquinas con el corredor de fondo.
   - **Zona 3-2 Modificada (Anti-Tiradores)**: Regla sagrada donde el ala baja a la esquina y el único poste **nunca sale de la pintura**.
-- **Creador de Jugadas por Pasos (Frames)**: Guarda secuencias animadas paso a paso (`Paso 1`, `Paso 2`, `Paso 3`) con interpolación de posiciones.
+- **Simulador Interactivo de Jugadas 5 vs 5 (60fps Animation Engine)**:
+  - Motor de animación continua con interpolación cúbica `requestAnimationFrame` para recrear trayectorias realistas sin saltos bruscos.
+  - Barra de controles interactivos con Play (▶️), Pausa (⏸️), Reinicio (⏮️), Scrubber de pasos y selector de velocidad variable (`0.5x`, `1.0x`, `1.5x`, `2.0x`).
+  - **Catálogo de 5 Jugadas Ofensivas Fundamentales 5v5 Precargadas**:
+    1. ⚡ **Pick & Roll Central**: Bloqueo directo hombro a hombro, penetración dividiendo la ayuda y caída con pase de bolsillo (*pocket pass*) para definición bajo el aro.
+    2. ⚡ **Horns (Cuernos)**: Doble pantalla alta en los codos del tiro libre con apertura en *Pop* perimetral y asistencia teledirigida a la esquina.
+    3. ⚡ **Give & Go (Pasar y Cortar)**: Fundamento escolar letal; pase al ala a 45°, finta de retroceso y corte explosivo en V por delante del defensor para bandeja sin marca.
+    4. ⚡ **Spain Pick & Roll**: Evolución élite FIBA; bloqueo directo al base combinado con pantalla ciega (*backscreen*) de un tirador a la espalda del poste rival.
+    5. ⚡ **Motion Offense (Conceptos)**: Distribución 4 abiertos 1 interior, pase perimetral con bloqueo indirecto (*downscreen*) y cambio de ritmo en puerta atrás (*backdoor cut*).
+  - Tarjetas de instrucción táctica en vivo con claves de ejecución para entrenadores y jugadores durante tiempos fuera.
+- **Creador de Jugadas por Pasos (Frames)**: Diseña y guarda secuencias animadas personalizadas con nombres de fase y notas tácticas.
 - **Modo Pantalla Completa Real**: Maximiza la cancha al 100% del viewport eliminando barras del navegador con HUD flotante compacto.
 
 ### 2. Plantilla & Motor de Sustituciones Inteligentes ("Plan B") (`RosterManager`)
@@ -98,12 +108,12 @@ npm run preview
 
 | Color | Hex | Función Táctica |
 | :--- | :--- | :--- |
-| **Obsidiana Cuervo** | `#0A0D14` | Fondo de alto contraste antirreflejo |
-| **Cian Neón** | `#00F0FF` | Acento principal, fichas Cuervos y líneas clave |
-| **Índigo Cuervo** | `#6366F1` | Plumaje secundario y elementos complementarios |
-| **Ámbar Balón** | `#F59E0B` | Balón de básquetbol y avisos tácticos |
-| **Rojo Alerta** | `#EF4444` | Fichas oponentes O1-O5 y peligro de 4+ faltas |
-| **Blanco Nieve** | `#FFFFFF` | Dorsales y líneas reglamentarias FIBA |
+| **Obsidiana Raíz** | `#050505` | Fondo base ultra oscuro antirreflejo |
+| **Obsidiana Cancha** | `#0A0A0C` | Superficie de la cancha táctica y paneles |
+| **Naranja Básquetbol** | `#ED4B00` | Identidad oficial Cuervos, acento principal y anillo central |
+| **Blanco Puro** | `#FFFFFF` | Líneas reglamentarias FIBA y dorsales de alto contraste |
+| **Rojo Alerta** | `#EF4444` | Fichas oponentes O1-O5 y advertencias |
+| **Ámbar Balón** | `#F59E0B` | Balón de básquetbol e indicadores tácticos |
 
 ---
 

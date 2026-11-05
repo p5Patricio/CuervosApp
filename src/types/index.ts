@@ -86,6 +86,7 @@ export interface PlayFrame {
   tokens: BoardToken[];
   trazos?: DrawingPath[];
   duracionMs?: number;
+  descripcion?: string;
 }
 
 export interface PlaySequence {
@@ -95,6 +96,8 @@ export interface PlaySequence {
   tipo: 'defensiva' | 'ofensiva';
   frames: PlayFrame[];
   createdAt: string;
+  puntosClave?: string[];
+  subtitulo?: string;
 }
 
 export interface PlanBRecommendation {

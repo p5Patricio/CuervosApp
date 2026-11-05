@@ -9,17 +9,23 @@ export default {
     extend: {
       colors: {
         cuervos: {
-          950: '#06080E',
-          black: '#0A0D14',
-          dark: '#111622',
-          card: '#161E30',
-          elevated: '#1D273E',
-          border: '#283654',
+          950: '#050505',
+          black: '#0A0A0C',
+          dark: '#121214',
+          card: '#1A1A20',
+          elevated: '#24242C',
+          border: '#33333E',
+          orange: {
+            DEFAULT: '#ED4B00',
+            hover: '#FF6014',
+            dim: '#C23E00',
+            glow: 'rgba(237, 75, 0, 0.40)'
+          },
           cyan: {
-            DEFAULT: '#00F0FF',
-            hover: '#38F4FF',
-            dim: '#00B8C4',
-            glow: 'rgba(0, 240, 255, 0.25)'
+            DEFAULT: '#ED4B00',
+            hover: '#FF6014',
+            dim: '#C23E00',
+            glow: 'rgba(237, 75, 0, 0.40)'
           },
           indigo: {
             DEFAULT: '#6366F1',
@@ -43,10 +49,10 @@ export default {
             light: '#34D399'
           },
           court: {
-            surface: '#0F1626',
-            paint: '#17223B',
-            key: '#1D2B4A',
-            lines: '#E2E8F0'
+            surface: '#08080A',
+            paint: '#16161C',
+            key: '#1E1E26',
+            lines: '#FFFFFF'
           }
         }
       },
@@ -55,8 +61,10 @@ export default {
         mono: ['JetBrains Mono', 'Fira Code', 'monospace']
       },
       boxShadow: {
-        'cyan-glow': '0 0 20px -2px rgba(0, 240, 255, 0.35)',
-        'cyan-glow-lg': '0 0 35px 2px rgba(0, 240, 255, 0.45)',
+        'orange-glow': '0 0 20px -2px rgba(237, 75, 0, 0.40)',
+        'orange-glow-lg': '0 0 35px 2px rgba(237, 75, 0, 0.50)',
+        'cyan-glow': '0 0 20px -2px rgba(237, 75, 0, 0.40)',
+        'cyan-glow-lg': '0 0 35px 2px rgba(237, 75, 0, 0.50)',
         'indigo-glow': '0 0 20px -2px rgba(99, 102, 241, 0.35)',
         'amber-glow': '0 0 20px -2px rgba(245, 158, 11, 0.4)',
         'red-glow': '0 0 20px -2px rgba(239, 68, 68, 0.4)',

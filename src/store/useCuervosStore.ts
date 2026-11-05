@@ -22,6 +22,64 @@ import {
   INITIAL_SCOUTING, 
   DEFAULT_BOARD_TOKENS 
 } from '../data/seedData';
+import { FUNDAMENTAL_5V5_PLAYS } from '../data/tacticalPlays';
+
+export const INITIAL_SEQUENCES: PlaySequence[] = [
+  ...FUNDAMENTAL_5V5_PLAYS,
+  {
+    id: 'seq-default-1',
+    nombre: 'Rotación 2-1-2 de Banda a Esquina',
+    subtitulo: 'Defensa Zonal y Protección de Pintura',
+    descripcion: 'Demostración de cómo se cierra el ala baja y el Ancla Central protege la verticalidad sin salir de la pintura.',
+    tipo: 'defensiva',
+    createdAt: '2026-10-18T00:00:00.000Z',
+    puntosClave: [
+      'El ala baja esprinta a la esquina para que Mateo nunca tenga que salir de la pintura.',
+      'El lado débil aplica la Regla del Flote cerrando al rebote.',
+      'Verticalidad estricta para evitar faltas tempranas del poste.',
+    ],
+    frames: [
+      {
+        id: 'frame-1',
+        nombre: 'Paso 1: Balón al Centro',
+        tokens: DEFAULT_BOARD_TOKENS,
+        duracionMs: 1500,
+        descripcion: 'Formación base 2-1-2 compacta. Mateo en el centro de la pintura, 2 guardias arriba.',
+      },
+      {
+        id: 'frame-2',
+        nombre: 'Paso 2: Pase a 45°',
+        tokens: DEFAULT_BOARD_TOKENS.map((t) => {
+          if (t.id === 'ball') return { ...t, x: 76, y: 44 };
+          if (t.id === 'c-3') return { ...t, x: 70, y: 48 }; // SG presiona
+          if (t.id === 'c-2') return { ...t, x: 46, y: 48 }; // PG ayuda al medio
+          if (t.id === 'c-4') return { ...t, x: 34, y: 68 }; // SF flota (lado débil)
+          if (t.id === 'c-1') return { ...t, x: 56, y: 66 }; // C lado fuerte
+          if (t.id === 'o-3') return { ...t, x: 76, y: 38 };
+          return t;
+        }),
+        duracionMs: 1500,
+        descripcion: 'El balón va al ala. SG puntea el tiro, el lado débil (SF) se mete a la pintura aplicando la Regla del Flote.',
+      },
+      {
+        id: 'frame-3',
+        nombre: 'Paso 3: Balón a la Esquina Derecha',
+        tokens: DEFAULT_BOARD_TOKENS.map((t) => {
+          if (t.id === 'ball') return { ...t, x: 88, y: 82 };
+          if (t.id === 'c-5') return { ...t, x: 82, y: 80 }; // PF cierra esquina
+          if (t.id === 'c-1') return { ...t, x: 62, y: 74 }; // C vertical aro
+          if (t.id === 'c-4') return { ...t, x: 42, y: 68 }; // SF rebote lado débil
+          if (t.id === 'c-3') return { ...t, x: 72, y: 62 }; // SG baja trampa
+          if (t.id === 'c-2') return { ...t, x: 54, y: 52 }; // PG codo
+          if (t.id === 'o-3') return { ...t, x: 88, y: 76 };
+          return t;
+        }),
+        duracionMs: 1500,
+        descripcion: 'Balón a la esquina. El alero bajo cierra el tiro; Mateo NO sale, se queda fijo cuidando el rebote del aro.',
+      },
+    ],
+  },
+];
 
 interface CuervosState {
   // Navigation & View Mode
@@ -46,6 +104,8 @@ interface CuervosState {
   activeSequenceId: string | null;
   activeSequenceFrameIndex: number;
   isPlayingSequence: boolean;
+  simulationSpeed: number;
+  setSimulationSpeed: (speed: number) => void;
 
   // Tactical Board Actions
   setTokens: (tokens: BoardToken[]) => void;
@@ -116,7 +176,7 @@ export const useCuervosStore = create<CuervosState>()(
       tokens: DEFAULT_BOARD_TOKENS,
       drawingMode: 'move',
       drawings: [],
-      drawColor: '#00F0FF',
+      drawColor: '#ED4B00',
       drawWidth: 3,
       activeFormationId: '2-1-2',
       currentStepIndex: 0,
@@ -124,62 +184,19 @@ export const useCuervosStore = create<CuervosState>()(
       isWeakSideFloatActive: false,
 
       // Sequences
-      sequences: [
-        {
-          id: 'seq-default-1',
-          nombre: 'Rotación 2-1-2 de Banda a Esquina',
-          descripcion: 'Demostración de cómo se cierra el ala baja y el Ancla Central protege la verticalidad sin salir de la pintura.',
-          tipo: 'defensiva',
-          createdAt: new Date().toISOString(),
-          frames: [
-            {
-              id: 'frame-1',
-              nombre: 'Paso 1: Balón al Centro',
-              tokens: DEFAULT_BOARD_TOKENS,
-              duracionMs: 1500,
-            },
-            {
-              id: 'frame-2',
-              nombre: 'Paso 2: Pase a 45°',
-              tokens: DEFAULT_BOARD_TOKENS.map((t) => {
-                if (t.id === 'ball') return { ...t, x: 76, y: 44 };
-                if (t.id === 'c-3') return { ...t, x: 70, y: 48 }; // SG presiona
-                if (t.id === 'c-2') return { ...t, x: 46, y: 48 }; // PG ayuda al medio
-                if (t.id === 'c-4') return { ...t, x: 34, y: 68 }; // SF flota (lado débil)
-                if (t.id === 'c-1') return { ...t, x: 56, y: 66 }; // C lado fuerte
-                if (t.id === 'o-3') return { ...t, x: 76, y: 38 };
-                return t;
-              }),
-              duracionMs: 1500,
-            },
-            {
-              id: 'frame-3',
-              nombre: 'Paso 3: Balón a la Esquina Derecha',
-              tokens: DEFAULT_BOARD_TOKENS.map((t) => {
-                if (t.id === 'ball') return { ...t, x: 88, y: 82 };
-                if (t.id === 'c-5') return { ...t, x: 82, y: 80 }; // PF cierra esquina
-                if (t.id === 'c-1') return { ...t, x: 62, y: 74 }; // C vertical aro
-                if (t.id === 'c-4') return { ...t, x: 42, y: 68 }; // SF rebote lado débil
-                if (t.id === 'c-3') return { ...t, x: 72, y: 62 }; // SG baja trampa
-                if (t.id === 'c-2') return { ...t, x: 54, y: 52 }; // PG codo
-                if (t.id === 'o-3') return { ...t, x: 88, y: 76 };
-                return t;
-              }),
-              duracionMs: 1500,
-            },
-          ],
-        },
-      ],
-      activeSequenceId: null,
+      sequences: INITIAL_SEQUENCES,
+      activeSequenceId: 'play-pick-and-roll',
       activeSequenceFrameIndex: 0,
       isPlayingSequence: false,
+      simulationSpeed: 1,
+      setSimulationSpeed: (simulationSpeed) => set({ simulationSpeed }),
 
       setTokens: (tokens) => set({ tokens }),
 
       updateTokenPosition: (id, x, y) =>
         set((state) => ({
           tokens: state.tokens.map((t) =>
-            t.id === id ? { ...t, x: Math.max(3, Math.min(97, x)), y: Math.max(3, Math.min(97, y)) } : t
+            t.id === id ? { ...t, x: Math.max(5, Math.min(95, x)), y: Math.max(6, Math.min(93, y)) } : t
           ),
         })),
 
@@ -704,6 +721,11 @@ export const useCuervosStore = create<CuervosState>()(
           formations: INITIAL_DEFENSES,
           activeFormationId: '2-1-2',
           currentStepIndex: 0,
+          sequences: INITIAL_SEQUENCES,
+          activeSequenceId: 'play-pick-and-roll',
+          activeSequenceFrameIndex: 0,
+          isPlayingSequence: false,
+          simulationSpeed: 1,
           tacticalCards: INITIAL_TACTICAL_CARDS,
           matchLogs: INITIAL_MATCH_LOGS,
           scoutingCards: INITIAL_SCOUTING,
@@ -712,6 +734,23 @@ export const useCuervosStore = create<CuervosState>()(
     }),
     {
       name: 'cuervos-app-storage',
+      version: 2,
+      migrate: (persistedState: any, version: number) => {
+        if (!persistedState) return persistedState;
+        if (version < 2) {
+          const existingSeqs: PlaySequence[] = persistedState.sequences || [];
+          const missingPlays = FUNDAMENTAL_5V5_PLAYS.filter(
+            (p) => !existingSeqs.some((s) => s.id === p.id)
+          );
+          return {
+            ...persistedState,
+            sequences: [...missingPlays, ...existingSeqs],
+            activeSequenceId: persistedState.activeSequenceId || 'play-pick-and-roll',
+            simulationSpeed: persistedState.simulationSpeed || 1,
+          };
+        }
+        return persistedState;
+      },
       storage: createJSONStorage(() => localStorage),
     }
   )

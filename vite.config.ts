@@ -12,8 +12,8 @@ export default defineConfig({
         name: 'CuervosApp - Táctica & Sustituciones',
         short_name: 'CuervosApp',
         description: 'Pizarra táctica interactiva, sustituciones inteligentes y base de conocimiento para Cuervos Básquetbol',
-        theme_color: '#0A0D14',
-        background_color: '#06080E',
+        theme_color: '#0A0A0C',
+        background_color: '#050505',
         display: 'standalone',
         orientation: 'any',
         icons: [

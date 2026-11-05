@@ -8,9 +8,14 @@
   }
 
   body {
-    background-color: #06080E;
+    background-color: #050505;
     color: #F8FAFC;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  ::selection {
+    background-color: #ED4B00;
+    color: #FFFFFF;
   }
 }
 
@@ -28,25 +33,25 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #0A0D14;
+  background: #0A0A0C;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #283654;
+  background: #33333E;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #00F0FF;
+  background: #ED4B00;
 }
 
 /* Animations */
 @keyframes pulseGlow {
   0%, 100% {
-    filter: drop-shadow(0 0 4px rgba(0, 240, 255, 0.4));
+    filter: drop-shadow(0 0 4px rgba(237, 75, 0, 0.4));
   }
   50% {
-    filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.9));
+    filter: drop-shadow(0 0 12px rgba(237, 75, 0, 0.85));
   }
 }
 

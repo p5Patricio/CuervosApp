@@ -24,7 +24,7 @@ export const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-cuervos-950 flex flex-col font-sans text-slate-100 antialiased selection:bg-cuervos-cyan selection:text-cuervos-950">
+    <div className="min-h-screen bg-cuervos-950 flex flex-col font-sans text-slate-100 antialiased selection:bg-cuervos-orange selection:text-white">
       {/* Header (hidden in fullscreen tactical board) */}
       <Header />
 
@@ -37,7 +37,7 @@ export const App: React.FC = () => {
       )}
 
       {/* Main Viewport Container */}
-      <main className="flex-1 flex flex-col overflow-x-hidden">
+      <main className="flex-1 flex flex-col overflow-x-hidden overscroll-none">
         {activeTab === 'pizarra' && <TacticalBoard />}
         {activeTab === 'plantilla' && <RosterManager />}
         {activeTab === 'conocimiento' && <KnowledgeBase />}
@@ -49,7 +49,7 @@ export const App: React.FC = () => {
           <button
             onClick={() => setActiveTab('pizarra')}
             className={`flex flex-col items-center gap-1 text-[10px] font-bold ${
-              activeTab === 'pizarra' ? 'text-cuervos-cyan' : 'text-slate-400'
+              activeTab === 'pizarra' ? 'text-cuervos-orange' : 'text-slate-400'
             }`}
           >
             <LayoutDashboard className="w-5 h-5" />
@@ -59,7 +59,7 @@ export const App: React.FC = () => {
           <button
             onClick={() => setActiveTab('plantilla')}
             className={`flex flex-col items-center gap-1 text-[10px] font-bold ${
-              activeTab === 'plantilla' ? 'text-cuervos-cyan' : 'text-slate-400'
+              activeTab === 'plantilla' ? 'text-cuervos-orange' : 'text-slate-400'
             }`}
           >
             <Users className="w-5 h-5" />
@@ -69,7 +69,7 @@ export const App: React.FC = () => {
           <button
             onClick={() => setActiveTab('conocimiento')}
             className={`flex flex-col items-center gap-1 text-[10px] font-bold ${
-              activeTab === 'conocimiento' ? 'text-cuervos-cyan' : 'text-slate-400'
+              activeTab === 'conocimiento' ? 'text-cuervos-orange' : 'text-slate-400'
             }`}
           >
             <BookOpen className="w-5 h-5" />

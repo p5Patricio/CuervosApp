@@ -19,7 +19,7 @@ export const INITIAL_PLAYERS: Player[] = [
     fatiga: 15,
     esTitular: true,
     enBanca: false,
-    avatarColor: '#00F0FF',
+    avatarColor: '#ED4B00',
   },
   {
     id: 'player-2',
@@ -39,7 +39,7 @@ export const INITIAL_PLAYERS: Player[] = [
     fatiga: 25,
     esTitular: true,
     enBanca: false,
-    avatarColor: '#6366F1',
+    avatarColor: '#EA580C',
   },
   {
     id: 'player-3',
@@ -59,7 +59,7 @@ export const INITIAL_PLAYERS: Player[] = [
     fatiga: 20,
     esTitular: true,
     enBanca: false,
-    avatarColor: '#38F4FF',
+    avatarColor: '#FF6014',
   },
   {
     id: 'player-4',
@@ -79,7 +79,7 @@ export const INITIAL_PLAYERS: Player[] = [
     fatiga: 35,
     esTitular: true,
     enBanca: false,
-    avatarColor: '#818CF8',
+    avatarColor: '#C23E00',
   },
   {
     id: 'player-5',
@@ -99,7 +99,7 @@ export const INITIAL_PLAYERS: Player[] = [
     fatiga: 30,
     esTitular: true,
     enBanca: false,
-    avatarColor: '#00B8C4',
+    avatarColor: '#F59E0B',
   },
   {
     id: 'player-6',
@@ -119,7 +119,7 @@ export const INITIAL_PLAYERS: Player[] = [
     fatiga: 5,
     esTitular: false,
     enBanca: true,
-    avatarColor: '#22D3EE',
+    avatarColor: '#FFFFFF',
   },
   {
     id: 'player-7',
@@ -481,15 +481,15 @@ export const DEFAULT_BOARD_TOKENS: BoardToken[] = [
   { id: 'c-1', type: 'cuervos', playerId: 'player-1', label: 'C', number: 15, x: 50, y: 64, role: 'Ancla Central', fouls: 0 },
   { id: 'c-2', type: 'cuervos', playerId: 'player-2', label: 'PG', number: 7, x: 42, y: 40, role: 'Guardia / Base', fouls: 1 },
   { id: 'c-3', type: 'cuervos', playerId: 'player-3', label: 'SG', number: 11, x: 58, y: 40, role: 'Escolta Tirador', fouls: 0 },
-  { id: 'c-4', type: 'cuervos', playerId: 'player-4', label: 'SF', number: 23, x: 26, y: 72, role: 'Ala Rápida', fouls: 2 },
-  { id: 'c-5', type: 'cuervos', playerId: 'player-5', label: 'PF', number: 5, x: 74, y: 72, role: 'Alero Bajo', fouls: 1 },
+  { id: 'c-4', type: 'cuervos', playerId: 'player-4', label: 'SF', number: 23, x: 28, y: 70, role: 'Ala Rápida', fouls: 2 },
+  { id: 'c-5', type: 'cuervos', playerId: 'player-5', label: 'PF', number: 5, x: 72, y: 70, role: 'Alero Bajo', fouls: 1 },
 
   // 5 Opponents
   { id: 'o-1', type: 'opponent', label: 'O1', number: 1, x: 50, y: 26, badge: 'Tirador Letal' },
   { id: 'o-2', type: 'opponent', label: 'O2', number: 2, x: 22, y: 44, badge: null },
   { id: 'o-3', type: 'opponent', label: 'O3', number: 3, x: 78, y: 44, badge: 'Flotar (No tira)' },
-  { id: 'o-4', type: 'opponent', label: 'O4', number: 4, x: 18, y: 80, badge: null },
-  { id: 'o-5', type: 'opponent', label: 'O5', number: 5, x: 82, y: 80, badge: 'Poste Rival' },
+  { id: 'o-4', type: 'opponent', label: 'O4', number: 4, x: 16, y: 82, badge: null },
+  { id: 'o-5', type: 'opponent', label: 'O5', number: 5, x: 84, y: 82, badge: 'Poste Rival' },
 
   // 1 Basketball
   { id: 'ball', type: 'ball', label: '🏀', x: 50, y: 32 },

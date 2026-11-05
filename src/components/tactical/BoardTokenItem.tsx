@@ -6,7 +6,8 @@ interface BoardTokenItemProps {
   token: BoardToken;
   isDragging: boolean;
   isDrawingMode: boolean;
-  onDragStart: (id: string, clientX: number, clientY: number) => void;
+  isSimulating?: boolean;
+  onDragStart: (id: string, clientX: number, clientY: number, pointerId: number) => void;
   onDoubleTapOpponent?: (id: string) => void;
   onTapToken?: (id: string) => void;
   isFloating?: boolean;
@@ -16,6 +17,7 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
   token,
   isDragging,
   isDrawingMode,
+  isSimulating = false,
   onDragStart,
   onDoubleTapOpponent,
   onTapToken,
@@ -52,7 +54,7 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
       }
     }
 
-    onDragStart(token.id, e.clientX, e.clientY);
+    onDragStart(token.id, e.clientX, e.clientY, e.pointerId);
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -74,8 +76,8 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
 
     setIsPressing(false);
 
-    // If movement was less than 5px, it's a tap!
-    if (!hasMovedRef.current && onTapToken) {
+    // If movement was less than 5px and not a cancel event, it's a tap!
+    if (e.type !== 'pointercancel' && !hasMovedRef.current && onTapToken) {
       onTapToken(token.id);
     }
 
@@ -104,9 +106,9 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
 
     return (
       <div
-        className={`absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 py-0.5 rounded text-[10px] tracking-tight flex items-center gap-1 border shadow-lg pointer-events-none z-30 ${bgClass}`}
+        className={`absolute -bottom-5 sm:-bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap px-1 sm:px-1.5 py-0.5 rounded text-[8px] sm:text-[10px] tracking-tight flex items-center gap-1 border shadow-lg pointer-events-none z-30 ${bgClass}`}
       >
-        <Icon className="w-2.5 h-2.5 shrink-0" />
+        <Icon className="w-2 h-2 sm:w-2.5 sm:h-2.5 shrink-0" />
         <span>{labelText}</span>
       </div>
     );
@@ -130,6 +132,11 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
     );
   };
 
+  const isMoving = isDragging || isPressing || isSimulating;
+  const tokenTransition = isMoving
+    ? 'none'
+    : 'left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)';
+
   // Basketball Rendering
   if (token.type === 'ball') {
     return (
@@ -137,20 +144,21 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         style={{
           left: `${token.x}%`,
           top: `${token.y}%`,
           transform: 'translate(-50%, -50%)',
-          transition: isDragging ? 'none' : 'left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          transition: tokenTransition,
         }}
-        className={`absolute z-30 cursor-grab active:cursor-grabbing touch-none-board select-none ${
+        className={`absolute z-30 cursor-grab active:cursor-grabbing touch-none-board touch-none select-none ${
           isDrawingMode ? 'pointer-events-none opacity-60' : ''
         }`}
         title="Balón Oficial (Arrastrable)"
       >
         <div
-          className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-amber-500 via-orange-600 to-amber-700 border-2 border-amber-300 shadow-amber-glow flex items-center justify-center transform transition-transform ${
-            isPressing || isDragging ? 'scale-125 ring-4 ring-orange-400/40' : 'hover:scale-110'
+          className={`w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-amber-500 via-orange-600 to-amber-700 border-2 border-amber-300 shadow-amber-glow flex items-center justify-center transform transition-transform duration-150 ${
+            isPressing || isDragging ? 'scale-110 ring-4 ring-orange-400/40' : 'hover:scale-110'
           }`}
         >
           <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center">
@@ -158,7 +166,7 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
             <div className="absolute inset-0 border border-slate-900/60 rounded-full" />
             <div className="absolute w-full h-0.5 bg-slate-950/70" />
             <div className="absolute h-full w-0.5 bg-slate-950/70" />
-            <div className="text-sm select-none">🏀</div>
+            <div className="text-xs sm:text-sm select-none">🏀</div>
           </div>
         </div>
       </div>
@@ -172,13 +180,14 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         style={{
           left: `${token.x}%`,
           top: `${token.y}%`,
           transform: 'translate(-50%, -50%)',
-          transition: isDragging ? 'none' : 'left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          transition: tokenTransition,
         }}
-        className={`absolute z-20 cursor-grab active:cursor-grabbing touch-none-board select-none ${
+        className={`absolute z-20 cursor-grab active:cursor-grabbing touch-none-board touch-none select-none ${
           isDrawingMode ? 'pointer-events-none opacity-65' : ''
         }`}
       >
@@ -188,19 +197,19 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
         )}
 
         <div
-          className={`relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-b from-cuervos-elevated to-cuervos-dark border-2 sm:border-[2.5px] border-cuervos-cyan shadow-cyan-glow flex flex-col items-center justify-center transform transition-all ${
+          className={`relative w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-gradient-to-b from-cuervos-elevated to-cuervos-dark border-2 sm:border-[2.5px] border-cuervos-orange shadow-orange-glow flex flex-col items-center justify-center transform transition-transform duration-150 ${
             isPressing || isDragging
-              ? 'scale-125 z-40 ring-4 ring-cuervos-cyan/50 shadow-cyan-glow-lg'
+              ? 'scale-110 z-40 ring-4 ring-cuervos-orange/50 shadow-orange-glow-lg'
               : 'hover:scale-105'
           } ${isFloating ? 'ring-2 ring-emerald-400' : ''}`}
         >
           {/* Dorsal Number */}
-          <span className="text-white font-black text-sm sm:text-base leading-none font-mono">
+          <span className="text-white font-black text-xs sm:text-base leading-none font-mono">
             {token.number ?? '#'}
           </span>
 
           {/* Name / Short Label */}
-          <span className="text-cuervos-cyan font-bold text-[9px] sm:text-[10px] tracking-tight leading-none mt-0.5">
+          <span className="text-cuervos-orange font-bold text-[8px] sm:text-[10px] tracking-tight leading-none mt-0.5">
             {token.label}
           </span>
 
@@ -210,7 +219,7 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
 
         {/* Role Pill */}
         {token.role && (
-          <div className="absolute -top-5 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 py-0.2 rounded bg-cuervos-950/90 text-slate-300 text-[9px] font-medium border border-cuervos-border pointer-events-none shadow">
+          <div className="absolute -top-4 sm:-top-5 left-1/2 -translate-x-1/2 whitespace-nowrap px-1 sm:px-1.5 py-0.2 rounded bg-cuervos-950/90 text-slate-300 text-[8px] sm:text-[9px] font-medium border border-cuervos-border pointer-events-none shadow">
             {token.role.split(' ')[0]}
           </div>
         )}
@@ -224,26 +233,27 @@ export const BoardTokenItem: React.FC<BoardTokenItemProps> = ({
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
       onDoubleClick={() => onDoubleTapOpponent && onDoubleTapOpponent(token.id)}
       style={{
         left: `${token.x}%`,
         top: `${token.y}%`,
         transform: 'translate(-50%, -50%)',
-        transition: isDragging ? 'none' : 'left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        transition: tokenTransition,
       }}
-      className={`absolute z-20 cursor-grab active:cursor-grabbing touch-none-board select-none ${
+      className={`absolute z-20 cursor-grab active:cursor-grabbing touch-none-board touch-none select-none ${
         isDrawingMode ? 'pointer-events-none opacity-65' : ''
       }`}
       title="Toca dos veces para cambiar etiqueta (Tirador Letal / Flotar / Poste)"
     >
       <div
-        className={`relative w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-gradient-to-br from-red-600 via-cuervos-red-dark to-red-950 border-2 sm:border-[2.5px] border-red-400 shadow-red-glow flex flex-col items-center justify-center transform transition-all ${
+        className={`relative w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-red-600 via-cuervos-red-dark to-red-950 border-2 sm:border-[2.5px] border-red-400 shadow-red-glow flex flex-col items-center justify-center transform transition-transform duration-150 ${
           isPressing || isDragging
-            ? 'scale-125 z-40 ring-4 ring-red-400/50 shadow-red-glow'
+            ? 'scale-110 z-40 ring-4 ring-red-400/50 shadow-red-glow'
             : 'hover:scale-105'
         }`}
       >
-        <span className="text-white font-black text-sm sm:text-base leading-none font-mono">
+        <span className="text-white font-black text-xs sm:text-base leading-none font-mono">
           {token.label}
         </span>
       </div>

@@ -18,14 +18,18 @@ export const Header: React.FC = () => {
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
           {/* Logo & Brand */}
           <div className="flex items-center gap-3">
-            <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden bg-cuervos-dark border border-cuervos-cyan/60 shadow-cyan-glow shrink-0 flex items-center justify-center">
+            <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden bg-cuervos-dark border border-cuervos-orange/60 shadow-orange-glow shrink-0 flex items-center justify-center">
               <img
                 src={`${import.meta.env.BASE_URL}logo-cuervos.png`}
                 alt="Logo Oficial Cuervos Básquetbol"
                 className="w-full h-full object-contain p-0.5"
                 onError={(e) => {
-                  // Fallback to svg if png fails
-                  (e.target as HTMLImageElement).src = `${import.meta.env.BASE_URL}logo-cuervos.svg`;
+                  const target = e.currentTarget;
+                  target.onerror = null;
+                  const fallbackUrl = `${import.meta.env.BASE_URL}logo-cuervos.svg`;
+                  if (!target.src.endsWith('logo-cuervos.svg')) {
+                    target.src = fallbackUrl;
+                  }
                 }}
               />
             </div>
@@ -34,7 +38,7 @@ export const Header: React.FC = () => {
               <div className="flex items-center gap-2">
                 <h1 className="font-black text-white text-base sm:text-lg tracking-wider uppercase font-mono flex items-center gap-1.5">
                   <span>CUERVOS</span>
-                  <span className="text-cuervos-cyan text-xs font-sans tracking-normal px-1.5 py-0.2 rounded bg-cuervos-elevated border border-cuervos-cyan/30">
+                  <span className="text-cuervos-orange text-xs font-sans tracking-normal px-1.5 py-0.2 rounded bg-cuervos-elevated border border-cuervos-orange/30 font-bold">
                     APP
                   </span>
                 </h1>
@@ -56,7 +60,7 @@ export const Header: React.FC = () => {
               onClick={() => setActiveTab('pizarra')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${
                 activeTab === 'pizarra'
-                  ? 'bg-cuervos-cyan text-cuervos-950 shadow-cyan-glow'
+                  ? 'bg-cuervos-orange text-white shadow-orange-glow'
                   : 'text-slate-400 hover:text-white hover:bg-cuervos-elevated'
               }`}
             >
@@ -69,7 +73,7 @@ export const Header: React.FC = () => {
               onClick={() => setActiveTab('plantilla')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${
                 activeTab === 'plantilla'
-                  ? 'bg-cuervos-cyan text-cuervos-950 shadow-cyan-glow'
+                  ? 'bg-cuervos-orange text-white shadow-orange-glow'
                   : 'text-slate-400 hover:text-white hover:bg-cuervos-elevated'
               }`}
             >
@@ -82,7 +86,7 @@ export const Header: React.FC = () => {
               onClick={() => setActiveTab('conocimiento')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${
                 activeTab === 'conocimiento'
-                  ? 'bg-cuervos-cyan text-cuervos-950 shadow-cyan-glow'
+                  ? 'bg-cuervos-orange text-white shadow-orange-glow'
                   : 'text-slate-400 hover:text-white hover:bg-cuervos-elevated'
               }`}
             >
@@ -99,7 +103,7 @@ export const Header: React.FC = () => {
               className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-cuervos-elevated hover:bg-cuervos-border text-slate-300 hover:text-white border border-cuervos-border/70 text-xs font-bold transition-all shadow-sm"
               title="Administrar copia de seguridad local JSON"
             >
-              <Database className="w-3.5 h-3.5 text-cuervos-cyan" />
+              <Database className="w-3.5 h-3.5 text-cuervos-orange" />
               <span className="hidden md:inline">Respaldo JSON</span>
             </button>
           </div>
