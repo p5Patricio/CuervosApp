@@ -1,6 +1,6 @@
 import React from 'react';
 import { OpponentBadge, BoardToken } from '../../types';
-import { Flame, EyeOff, Shield, X, Check } from 'lucide-react';
+import { Crosshair, EyeOff, Shield, X, Check } from 'lucide-react';
 
 interface OpponentBadgeModalProps {
   token: BoardToken | null;
@@ -8,6 +8,12 @@ interface OpponentBadgeModalProps {
   onClose: () => void;
   onSelectBadge: (badge: OpponentBadge | null) => void;
 }
+
+const BADGES: { id: OpponentBadge; desc: string; Icon: typeof Shield }[] = [
+  { id: 'Tirador Letal', desc: 'Puntear pegado, no dejarlo armar el tiro. Prohibido flotar.', Icon: Crosshair },
+  { id: 'Flotar (No tira)', desc: 'Darle 2 metros para descansar piernas y ayudar en la pintura.', Icon: EyeOff },
+  { id: 'Poste Rival', desc: 'Box-out con dos jugadores. Negar recepción bajo el aro.', Icon: Shield },
+];
 
 export const OpponentBadgeModal: React.FC<OpponentBadgeModalProps> = ({
   token,
@@ -17,98 +23,72 @@ export const OpponentBadgeModal: React.FC<OpponentBadgeModalProps> = ({
 }) => {
   if (!isOpen || !token) return null;
 
-  const badges: {
-    id: OpponentBadge;
-    label: string;
-    desc: string;
-    icon: React.ReactNode;
-    colorClasses: string;
-  }[] = [
-    {
-      id: 'Tirador Letal',
-      label: 'Tirador Letal',
-      desc: 'Puntear pegado, no permitir que arme el tiro, prohibido flotar.',
-      icon: <Flame className="w-5 h-5 text-amber-400" />,
-      colorClasses: 'hover:border-amber-400 hover:bg-amber-500/10 text-amber-200',
-    },
-    {
-      id: 'Flotar (No tira)',
-      label: 'Flotar (No tira)',
-      desc: 'Darle 2 metros de distancia para descansar piernas y ayudar en la pintura.',
-      icon: <EyeOff className="w-5 h-5 text-cyan-400" />,
-      colorClasses: 'hover:border-cyan-400 hover:bg-cyan-500/10 text-cyan-200',
-    },
-    {
-      id: 'Poste Rival',
-      label: 'Poste Rival',
-      desc: 'Box-out agresivo con dos jugadores. Negar recepción bajo el aro.',
-      icon: <Shield className="w-5 h-5 text-red-400" />,
-      colorClasses: 'hover:border-red-500 hover:bg-red-500/10 text-red-200',
-    },
-  ];
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-cuervos-dark border border-cuervos-border rounded-2xl w-full max-w-sm p-5 shadow-2xl space-y-4">
+    <div className="modal-backdrop">
+      <div className="modal-panel sm:max-w-sm space-y-4">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-cuervos-border pb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white font-black font-mono shadow-red-glow">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {/* Same disc as the opponent token on the board */}
+            <div className="w-10 h-10 rounded-full bg-white border-2 border-slate-900 flex items-center justify-center font-display font-black text-sm text-slate-950">
               {token.label}
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white">Etiqueta de Scouting</h3>
-              <p className="text-[11px] text-slate-400">Rival {token.label} de la liga</p>
+              <h3 className="font-display text-lg font-bold uppercase text-cuervos-chalk leading-none">Etiqueta de scouting</h3>
+              <p className="mt-1 text-xs text-slate-400">Rival {token.label}</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-cuervos-elevated"
-          >
+          <button type="button" onClick={onClose} className="icon-btn -mr-2" aria-label="Cerrar">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Badge Options */}
+        {/* Badge options */}
         <div className="space-y-2">
-          {badges.map((b) => {
-            const isSelected = token.badge === b.id;
+          {BADGES.map(({ id, desc, Icon }) => {
+            const isSelected = token.badge === id;
             return (
               <button
-                key={b.id}
+                key={id}
+                type="button"
+                aria-pressed={isSelected}
                 onClick={() => {
-                  onSelectBadge(b.id);
+                  onSelectBadge(id);
                   onClose();
                 }}
-                className={`w-full text-left p-3 rounded-xl border transition-all flex items-start gap-3 ${b.colorClasses} ${
+                className={`w-full min-h-[56px] text-left p-3 rounded-xl border transition-colors flex items-start gap-3 ${
                   isSelected
-                    ? 'border-cuervos-cyan bg-cuervos-elevated shadow-cyan-glow'
-                    : 'border-cuervos-border/60 bg-cuervos-card/50'
+                    ? 'border-cuervos-orange bg-cuervos-orange/10'
+                    : 'border-white/10 bg-cuervos-card hover:bg-white/5'
                 }`}
               >
-                <div className="mt-0.5 shrink-0">{b.icon}</div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs">{b.label}</span>
-                    {isSelected && <Check className="w-4 h-4 text-cuervos-cyan" />}
+                <Icon
+                  className={`w-[18px] h-[18px] mt-0.5 shrink-0 ${isSelected ? 'text-cuervos-orange' : 'text-slate-300'}`}
+                  strokeWidth={2}
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-semibold text-sm text-cuervos-chalk">{id}</span>
+                    {isSelected && <Check className="w-4 h-4 text-cuervos-orange" strokeWidth={2.5} />}
                   </div>
-                  <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">{b.desc}</p>
+                  <p className="text-[13px] text-slate-400 mt-0.5 leading-snug">{desc}</p>
                 </div>
               </button>
             );
           })}
         </div>
 
-        {/* Clear Badge Option */}
+        {/* Clear badge */}
         {token.badge && (
           <button
+            type="button"
             onClick={() => {
               onSelectBadge(null);
               onClose();
             }}
-            className="w-full py-2 text-center text-xs text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors border border-transparent hover:border-red-500/30"
+            className="btn-ghost w-full"
           >
-            Quitar etiqueta táctica
+            Quitar etiqueta
           </button>
         )}
       </div>

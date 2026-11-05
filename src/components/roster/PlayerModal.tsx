@@ -91,37 +91,39 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-cuervos-dark border border-cuervos-border rounded-2xl w-full max-w-lg p-5 shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div className="modal-backdrop">
+      <div className="modal-panel">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-cuervos-border pb-3 mb-4">
-          <h3 className="font-bold text-white text-base">
-            {player ? 'Editar Jugador Cuervos' : 'Agregar Nuevo Jugador a Cuervos'}
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="font-display text-xl font-bold uppercase text-cuervos-chalk leading-none">
+            {player ? 'Editar jugador' : 'Nuevo jugador'}
           </h3>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-cuervos-elevated"
+            className="icon-btn -mr-2"
+            aria-label="Cerrar"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* Basic Info */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Nombre Completo / Apodo</label>
+              <label className="field-label">Nombre Completo / Apodo</label>
               <input
                 type="text"
                 required
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
                 placeholder="Ej. Lucas 'Flecha' Ramos"
-                className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border focus:border-cuervos-cyan focus:outline-none"
+                className="field"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Dorsal (#)</label>
+              <label className="field-label">Dorsal (#)</label>
               <input
                 type="number"
                 min="0"
@@ -129,14 +131,14 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                 required
                 value={dorsal}
                 onChange={(e) => setDorsal(Number(e.target.value))}
-                className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border focus:border-cuervos-cyan focus:outline-none font-mono"
+                className="field font-display font-bold tabular-nums text-base"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Estatura (cm)</label>
+              <label className="field-label">Estatura (cm)</label>
               <input
                 type="number"
                 min="150"
@@ -144,15 +146,15 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                 required
                 value={estatura}
                 onChange={(e) => setEstatura(Number(e.target.value))}
-                className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border focus:border-cuervos-cyan focus:outline-none font-mono"
+                className="field font-display font-bold tabular-nums text-base"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Rol Táctico</label>
+              <label className="field-label">Rol Táctico</label>
               <select
                 value={rolPrimario}
                 onChange={(e) => setRolPrimario(e.target.value as PlayerRole)}
-                className="w-full bg-cuervos-elevated text-white text-xs px-3 py-2 rounded-lg border border-cuervos-border focus:border-cuervos-cyan focus:outline-none"
+                className="field"
               >
                 {ROLES.map((r) => (
                   <option key={r} value={r}>
@@ -164,16 +166,16 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
           </div>
 
           {/* Attributes Range Sliders (1 - 10) */}
-          <div className="bg-cuervos-card/70 rounded-xl p-3 border border-cuervos-border/50 space-y-3">
-            <h4 className="text-xs font-bold text-cuervos-cyan uppercase tracking-wider">
+          <div className="rounded-xl bg-cuervos-black/40 border border-white/10 p-3 space-y-4">
+            <h4 className="eyebrow">
               Atributos de Rendimiento (1 a 10)
             </h4>
 
             {/* Velocidad */}
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="text-slate-300">Velocidad</span>
-                <span className="font-mono font-bold text-cuervos-cyan">{velocidad}/10</span>
+                <span className="text-slate-400">Velocidad</span>
+                <span className="font-display font-bold tabular-nums text-sm text-cuervos-chalk">{velocidad}/10</span>
               </div>
               <input
                 type="range"
@@ -181,15 +183,15 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                 max="10"
                 value={velocidad}
                 onChange={(e) => setVelocidad(Number(e.target.value))}
-                className="w-full accent-cuervos-cyan"
+                className="w-full h-8 accent-cuervos-orange"
               />
             </div>
 
             {/* Resistencia */}
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="text-slate-300">Resistencia Física</span>
-                <span className="font-mono font-bold text-indigo-400">{resistencia}/10</span>
+                <span className="text-slate-400">Resistencia Física</span>
+                <span className="font-display font-bold tabular-nums text-sm text-cuervos-chalk">{resistencia}/10</span>
               </div>
               <input
                 type="range"
@@ -197,15 +199,15 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                 max="10"
                 value={resistencia}
                 onChange={(e) => setResistencia(Number(e.target.value))}
-                className="w-full accent-indigo-400"
+                className="w-full h-8 accent-cuervos-orange"
               />
             </div>
 
             {/* Defensa Interior / Rebote */}
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="text-slate-300">Defensa Interior / Rebote (Crítico para Poste)</span>
-                <span className="font-mono font-bold text-amber-400">{defensaInteriorRebote}/10</span>
+                <span className="text-slate-400">Defensa Interior / Rebote (Crítico para Poste)</span>
+                <span className="font-display font-bold tabular-nums text-sm text-cuervos-chalk">{defensaInteriorRebote}/10</span>
               </div>
               <input
                 type="range"
@@ -213,15 +215,15 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                 max="10"
                 value={defensaInteriorRebote}
                 onChange={(e) => setDefensaInteriorRebote(Number(e.target.value))}
-                className="w-full accent-amber-400"
+                className="w-full h-8 accent-cuervos-orange"
               />
             </div>
 
             {/* Defensa Exterior / Robo */}
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="text-slate-300">Defensa Exterior / Robo de Balón</span>
-                <span className="font-mono font-bold text-emerald-400">{defensaExteriorRobo}/10</span>
+                <span className="text-slate-400">Defensa Exterior / Robo de Balón</span>
+                <span className="font-display font-bold tabular-nums text-sm text-cuervos-chalk">{defensaExteriorRobo}/10</span>
               </div>
               <input
                 type="range"
@@ -229,40 +231,40 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                 max="10"
                 value={defensaExteriorRobo}
                 onChange={(e) => setDefensaExteriorRobo(Number(e.target.value))}
-                className="w-full accent-emerald-400"
+                className="w-full h-8 accent-cuervos-orange"
               />
             </div>
           </div>
 
           {/* Starter Checkbox */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 min-h-[44px]">
             <input
               type="checkbox"
               id="esTitularCheck"
               checked={esTitular}
               onChange={(e) => setEsTitular(e.target.checked)}
-              className="accent-cuervos-cyan w-4 h-4 rounded"
+              className="accent-cuervos-orange w-5 h-5 rounded"
             />
-            <label htmlFor="esTitularCheck" className="text-xs text-slate-300 select-none cursor-pointer">
+            <label htmlFor="esTitularCheck" className="text-sm text-slate-200 select-none cursor-pointer">
               Jugador Titular en el Quinteto Inicial
             </label>
           </div>
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-end gap-2 pt-3 border-t border-cuervos-border">
+          <div className="flex gap-2 pt-1">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+              className="btn-secondary flex-1"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-cuervos-cyan text-cuervos-950 font-black text-xs shadow-cyan-glow hover:bg-cuervos-cyan-hover transition-all"
+              className="btn-primary flex-1"
             >
               <Check className="w-4 h-4" />
-              <span>Guardar Jugador</span>
+              <span>Guardar</span>
             </button>
           </div>
         </form>

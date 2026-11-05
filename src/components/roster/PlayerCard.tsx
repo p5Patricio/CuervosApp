@@ -1,16 +1,6 @@
 import React from 'react';
 import { Player } from '../../types';
-import { 
-  UserCheck, 
-  UserX, 
-  Plus, 
-  Minus, 
-  AlertTriangle, 
-  Battery, 
-  Zap, 
-  Edit2,
-  Trash2
-} from 'lucide-react';
+import { Plus, Minus, Edit2, Trash2, Check } from 'lucide-react';
 
 interface PlayerCardProps {
   player: Player;
@@ -22,6 +12,19 @@ interface PlayerCardProps {
   onDelete: (id: string) => void;
   isSoleTallPlayer?: boolean;
 }
+
+// Attribute rows share one neutral bar style
+const AttributeBar: React.FC<{ label: string; value: number }> = ({ label, value }) => (
+  <div>
+    <div className="flex justify-between items-baseline text-xs mb-1">
+      <span className="text-slate-400">{label}</span>
+      <span className="font-display font-bold tabular-nums text-[13px] text-cuervos-chalk">{value}</span>
+    </div>
+    <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
+      <div className="bg-slate-300 h-full rounded-full" style={{ width: `${value * 10}%` }} />
+    </div>
+  </div>
+);
 
 export const PlayerCard: React.FC<PlayerCardProps> = ({
   player,
@@ -38,151 +41,118 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
   const isFouledOut = player.faltasEnVivo >= 5;
   const isHighFatigue = player.fatiga >= 75;
 
+  const fatigueLabel = player.fatiga >= 75 ? 'Agotado' : player.fatiga >= 40 ? 'Cansado' : 'Fresco';
+
   return (
-    <div
-      className={`relative bg-cuervos-card border rounded-2xl p-4 transition-all shadow-card ${
-        isAbsent
-          ? 'opacity-60 border-slate-700 bg-cuervos-dark/60'
-          : isFouledOut
-          ? 'border-red-600/80 bg-red-950/20'
-          : hasCriticalFouls
-          ? 'border-amber-500/70 bg-amber-950/15'
-          : 'border-cuervos-border/70 hover:border-cuervos-cyan/60'
+    <article
+      className={`surface-raised p-4 transition-opacity ${isAbsent ? 'opacity-55' : ''} ${
+        hasCriticalFouls && !isAbsent ? 'border-cuervos-orange/50' : ''
       }`}
     >
-      {/* Sole Tall Player Badge */}
-      {isSoleTallPlayer && (
-        <div className="absolute -top-2.5 right-4 px-2 py-0.5 rounded-full bg-cuervos-cyan text-cuervos-950 font-black text-[10px] tracking-wider uppercase shadow-cyan-glow flex items-center gap-1">
-          <Zap className="w-3 h-3 fill-current" />
-          <span>Único Poste Alto ({(player.estatura / 100).toFixed(2)}m)</span>
+      {/* Header: dorsal, name, role, attendance */}
+      <div className="flex items-start gap-3">
+        {/* Dorsal disc mirrors the board token */}
+        <div className="w-12 h-12 shrink-0 rounded-full bg-cuervos-black border-2 border-cuervos-orange flex items-center justify-center">
+          <span className="font-display font-bold tabular-nums text-xl leading-none text-cuervos-chalk">
+            {player.dorsal}
+          </span>
         </div>
-      )}
 
-      {/* Header: Dorsal, Name, Role, Attendance Toggle */}
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-3">
-          {/* Dorsal Circle */}
-          <div
-            className={`w-12 h-12 rounded-2xl flex flex-col items-center justify-center font-black font-mono shadow-md border ${
-              isSoleTallPlayer
-                ? 'bg-cuervos-elevated border-cuervos-cyan text-cuervos-cyan shadow-cyan-glow'
-                : 'bg-cuervos-elevated border-cuervos-border text-white'
-            }`}
-          >
-            <span className="text-xs text-slate-400 font-sans leading-none">#</span>
-            <span className="text-xl leading-none">{player.dorsal}</span>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-white text-base leading-tight flex items-center gap-2">
-              <span>{player.nombre}</span>
-              {player.esTitular && (
-                <span className="text-[10px] px-1.5 py-0.2 rounded bg-indigo-900/60 text-indigo-300 border border-indigo-500/30 font-semibold">
-                  Titular
-                </span>
-              )}
-            </h4>
-            <div className="flex flex-wrap items-center gap-1.5 mt-1">
-              <span className="text-xs font-semibold text-cuervos-cyan">{player.rolPrimario}</span>
-              <span className="text-[11px] text-slate-400">• {player.estatura} cm</span>
-            </div>
+        <div className="min-w-0 flex-1">
+          <h4 className="font-semibold text-cuervos-chalk text-base leading-tight truncate">{player.nombre}</h4>
+          <p className="mt-0.5 text-[13px] text-slate-400 truncate">
+            {player.rolPrimario} · {player.estatura} cm
+          </p>
+          <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+            <span className={player.esTitular ? 'chip-accent' : 'chip'}>{player.esTitular ? 'Titular' : 'Banca'}</span>
+            {isSoleTallPlayer && <span className="chip">Poste alto</span>}
           </div>
         </div>
 
-        {/* Attendance Toggle Button */}
+        {/* Attendance switch */}
         <button
+          type="button"
+          role="switch"
+          aria-checked={!isAbsent}
           onClick={() => onToggleAttendance(player.id)}
-          className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all border ${
-            !isAbsent
-              ? 'bg-emerald-950/70 text-emerald-300 border-emerald-500/40 hover:bg-emerald-900/80'
-              : 'bg-red-950/70 text-red-300 border-red-500/40 hover:bg-red-900/80'
-          }`}
+          className="shrink-0 flex flex-col items-center gap-1 min-w-[44px] -mr-1"
           title="Alternar presencia en el partido de hoy"
         >
-          {!isAbsent ? (
-            <>
-              <UserCheck className="w-3.5 h-3.5" />
-              <span>Presente</span>
-            </>
-          ) : (
-            <>
-              <UserX className="w-3.5 h-3.5" />
-              <span>Ausente</span>
-            </>
-          )}
+          <span
+            className={`relative inline-flex w-11 h-6 rounded-full transition-colors ${
+              isAbsent ? 'bg-white/10' : 'bg-cuervos-orange'
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow flex items-center justify-center transition-transform ${
+                isAbsent ? '' : 'translate-x-5'
+              }`}
+            >
+              {!isAbsent && <Check className="w-3 h-3 text-cuervos-orange" strokeWidth={3} />}
+            </span>
+          </span>
+          <span className="text-[10px] font-semibold text-slate-400">{isAbsent ? 'Ausente' : 'Presente'}</span>
         </button>
       </div>
 
-      {/* Live Match Status: Fouls (0 to 5) & Fatigue Meter */}
-      <div className="grid grid-cols-2 gap-3 mt-4 pt-3 border-t border-cuervos-border/50">
-        {/* Fouls Stepper */}
-        <div className="bg-cuervos-dark/70 rounded-xl p-2.5 border border-cuervos-border/50">
-          <div className="flex items-center justify-between text-xs mb-1.5">
-            <span className="font-medium text-slate-400 flex items-center gap-1">
-              <AlertTriangle className={`w-3.5 h-3.5 ${hasCriticalFouls ? 'text-amber-400' : 'text-slate-500'}`} />
-              <span>Faltas Hoy:</span>
-            </span>
+      {/* Live status: fouls stepper and fatigue */}
+      <div className="mt-4 grid grid-cols-1 min-[380px]:grid-cols-2 gap-3">
+        {/* Fouls stepper */}
+        <div className="rounded-xl bg-cuervos-black/60 border border-white/10 p-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="eyebrow">Faltas</span>
             <span
-              className={`font-black font-mono text-sm ${
-                isFouledOut ? 'text-red-500 animate-pulse' : hasCriticalFouls ? 'text-amber-400' : 'text-slate-200'
+              className={`font-display font-bold tabular-nums text-base leading-none ${
+                hasCriticalFouls ? 'text-cuervos-orange' : 'text-cuervos-chalk'
               }`}
             >
-              {player.faltasEnVivo} / 5
+              {player.faltasEnVivo}/5{isFouledOut ? ' · Fuera' : ''}
             </span>
           </div>
 
-          <div className="flex items-center justify-between gap-1">
+          <div className="flex items-center justify-between gap-2">
             <button
+              type="button"
               onClick={() => onDecrementFouls(player.id)}
               disabled={player.faltasEnVivo === 0}
-              className="p-1 rounded bg-cuervos-elevated hover:bg-cuervos-border text-slate-300 disabled:opacity-30"
-              title="Restar falta"
+              className="btn-secondary w-10 h-10 min-h-0 px-0 disabled:opacity-30"
+              aria-label="Restar falta"
             >
-              <Minus className="w-3.5 h-3.5" />
+              <Minus className="w-4 h-4" strokeWidth={2.25} />
             </button>
 
-            {/* Dots */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5" aria-hidden="true">
               {[1, 2, 3, 4, 5].map((n) => (
                 <span
                   key={n}
-                  className={`w-2.5 h-2.5 rounded-full ${
-                    n <= player.faltasEnVivo
-                      ? n === 5
-                        ? 'bg-red-500 shadow-red-glow'
-                        : n === 4
-                        ? 'bg-amber-400 shadow-amber-glow'
-                        : 'bg-emerald-400'
-                      : 'bg-slate-700'
+                  className={`w-2 h-2 rounded-full ${
+                    n <= player.faltasEnVivo ? (n >= 4 ? 'bg-cuervos-orange' : 'bg-cuervos-chalk') : 'bg-white/10'
                   }`}
                 />
               ))}
             </div>
 
             <button
+              type="button"
               onClick={() => onIncrementFouls(player.id)}
               disabled={player.faltasEnVivo >= 5}
-              className="p-1 rounded bg-cuervos-elevated hover:bg-cuervos-border text-slate-300 disabled:opacity-30"
-              title="Sumar falta cometida"
+              className="btn-secondary w-10 h-10 min-h-0 px-0 disabled:opacity-30"
+              aria-label="Sumar falta"
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Plus className="w-4 h-4" strokeWidth={2.25} />
             </button>
           </div>
         </div>
 
-        {/* Fatigue Slider */}
-        <div className="bg-cuervos-dark/70 rounded-xl p-2.5 border border-cuervos-border/50">
-          <div className="flex items-center justify-between text-xs mb-1.5">
-            <span className="font-medium text-slate-400 flex items-center gap-1">
-              <Battery className={`w-3.5 h-3.5 ${isHighFatigue ? 'text-red-400' : 'text-cuervos-cyan'}`} />
-              <span>Fatiga en vivo:</span>
-            </span>
-            <span
-              className={`font-black font-mono text-xs ${
-                isHighFatigue ? 'text-red-400' : 'text-slate-200'
-              }`}
-            >
-              {player.fatiga}%
+        {/* Fatigue */}
+        <div className="rounded-xl bg-cuervos-black/60 border border-white/10 p-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="eyebrow">Fatiga</span>
+            <span className="text-xs text-slate-400">
+              <span className={`font-display font-bold tabular-nums text-base leading-none ${isHighFatigue ? 'text-cuervos-orange' : 'text-cuervos-chalk'}`}>
+                {player.fatiga}%
+              </span>{' '}
+              {fatigueLabel}
             </span>
           </div>
 
@@ -193,102 +163,48 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
             step="5"
             value={player.fatiga}
             onChange={(e) => onSetFatigue(player.id, Number(e.target.value))}
-            className="w-full accent-cuervos-cyan cursor-pointer bg-cuervos-border h-1.5 rounded-lg"
+            className="w-full h-10 accent-cuervos-orange cursor-pointer"
+            aria-label={`Fatiga de ${player.nombre}`}
           />
-          <div className="flex justify-between text-[9px] text-slate-500 mt-1 font-mono">
-            <span>Fresco</span>
-            <span>Cansado</span>
-            <span>Agotado</span>
-          </div>
         </div>
       </div>
 
-      {/* Attributes Bar Grid (1 - 10) */}
-      <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-3 pt-3 border-t border-cuervos-border/40 text-xs">
-        {/* Velocidad */}
-        <div>
-          <div className="flex justify-between text-[11px] mb-0.5">
-            <span className="text-slate-400">Velocidad</span>
-            <span className="font-mono font-bold text-cuervos-cyan">{player.atributos.velocidad}/10</span>
-          </div>
-          <div className="w-full bg-cuervos-dark h-1.5 rounded-full overflow-hidden">
-            <div
-              className="bg-cuervos-cyan h-full rounded-full transition-all"
-              style={{ width: `${player.atributos.velocidad * 10}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Resistencia */}
-        <div>
-          <div className="flex justify-between text-[11px] mb-0.5">
-            <span className="text-slate-400">Resistencia</span>
-            <span className="font-mono font-bold text-indigo-400">{player.atributos.resistencia}/10</span>
-          </div>
-          <div className="w-full bg-cuervos-dark h-1.5 rounded-full overflow-hidden">
-            <div
-              className="bg-indigo-500 h-full rounded-full transition-all"
-              style={{ width: `${player.atributos.resistencia * 10}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Defensa Interior / Rebote */}
-        <div>
-          <div className="flex justify-between text-[11px] mb-0.5">
-            <span className="text-slate-400">Defensa Interior / Reb</span>
-            <span className="font-mono font-bold text-amber-400">
-              {player.atributos.defensaInteriorRebote}/10
-            </span>
-          </div>
-          <div className="w-full bg-cuervos-dark h-1.5 rounded-full overflow-hidden">
-            <div
-              className="bg-amber-400 h-full rounded-full transition-all"
-              style={{ width: `${player.atributos.defensaInteriorRebote * 10}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Defensa Exterior / Robo */}
-        <div>
-          <div className="flex justify-between text-[11px] mb-0.5">
-            <span className="text-slate-400">Defensa Exterior / Robo</span>
-            <span className="font-mono font-bold text-emerald-400">
-              {player.atributos.defensaExteriorRobo}/10
-            </span>
-          </div>
-          <div className="w-full bg-cuervos-dark h-1.5 rounded-full overflow-hidden">
-            <div
-              className="bg-emerald-400 h-full rounded-full transition-all"
-              style={{ width: `${player.atributos.defensaExteriorRobo * 10}%` }}
-            />
-          </div>
-        </div>
+      {/* Attributes (1-10) */}
+      <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 mt-4">
+        <AttributeBar label="Velocidad" value={player.atributos.velocidad} />
+        <AttributeBar label="Resistencia" value={player.atributos.resistencia} />
+        <AttributeBar label="Def. interior" value={player.atributos.defensaInteriorRebote} />
+        <AttributeBar label="Def. exterior" value={player.atributos.defensaExteriorRobo} />
       </div>
 
-      {/* Card Footer: Edit / Delete */}
-      <div className="flex items-center justify-between pt-3 mt-3 border-t border-cuervos-border/30">
-        <span className="text-[11px] text-slate-500">
-          Estado: {player.enBanca ? '🛋️ En Banca' : '⚡ En Cancha'}
+      {/* Footer: court status, edit, delete */}
+      <div className="flex items-center justify-between mt-3 pt-2 border-t border-white/10">
+        <span className="flex items-center gap-1.5 text-xs text-slate-400">
+          <span className={`w-1.5 h-1.5 rounded-full ${player.enBanca ? 'bg-slate-500' : 'bg-cuervos-orange'}`} />
+          {player.enBanca ? 'En banca' : 'En cancha'}
         </span>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center -mr-2">
           <button
+            type="button"
             onClick={() => onEdit(player)}
-            className="p-1 rounded text-slate-400 hover:text-white hover:bg-cuervos-elevated"
+            className="icon-btn"
+            aria-label="Editar jugador"
             title="Editar atributos"
           >
-            <Edit2 className="w-3.5 h-3.5" />
+            <Edit2 className="w-4 h-4" strokeWidth={2} />
           </button>
           <button
+            type="button"
             onClick={() => onDelete(player.id)}
-            className="p-1 rounded text-slate-500 hover:text-red-400 hover:bg-red-500/10"
+            className="icon-btn-danger"
+            aria-label="Eliminar jugador"
             title="Eliminar de la plantilla"
           >
-            <Trash2 className="w-3.5 h-3.5" />
+            <Trash2 className="w-4 h-4" strokeWidth={2} />
           </button>
         </div>
       </div>
-    </div>
+    </article>
   );
 };

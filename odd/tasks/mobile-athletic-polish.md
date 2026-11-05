@@ -13,15 +13,17 @@ Branch: feat/mobile-athletic-polish · Delivery: ask-on-risk · Runner: `npm tes
 - S8 Do not break store/tactics/persistence/simulation; English code comments/identifiers; `npm test` and `npm run build` clean.
 
 ## Tasks
-- [ ] T1 S7 shared UI primitives in `src/index.css` (inline)
-- [ ] T2 S1 opponent token + scouting tags (inline)
-- [ ] T3 S2-S3 wiki nav + tactical manual (inline)
-- [ ] T4 S4 match logs (inline)
-- [ ] T5 S5 scouting (inline)
-- [ ] T6 S6 roster, player card, Plan B, player modal (inline)
-- [ ] T7 S8 verification: tests + build (inline)
+- [x] T1 S7 shared UI primitives in `src/index.css` (inline) — 5e4d5b2
+- [x] T2 S1 opponent token + scouting tags (inline) — 5e4d5b2
+- [x] T3 S2-S3 wiki nav + tactical manual (inline) — 5e4d5b2
+- [x] T4 S4 match logs (inline) — 5e4d5b2
+- [x] T5 S5 scouting (inline) — 5e4d5b2
+- [x] T6 S6 roster, player card, Plan B, player modal (inline) + OpponentBadgeModal, QuickTokenHud — slice 2
+- [x] T7 S8 verification: tests + build (inline) — npm test 33/33 PASSED, npm run build OK
 
 ## Log
 - L1 (2026-11-05) User request: Lead UI/UX sprint fixing visual clutter, contrast, and design across the whole app for 360-430px phones; tasks 1-8 as stated in the session prompt (opponent token contrast, wiki segmented nav, manual, match logs, scouting, roster/PlayerCard/PlanB, palette, keep 33 tests and build green).
 - Route: all tasks inline (single coherent restyle, no writer trigger: units are not independent — they share the new CSS primitives).
 - Constraint found: `tests/adversarial_m2_audit.cjs` asserts token size class strings (`w-8 h-8 sm:w-11 sm:h-11`, etc.) and pointer handlers in BoardTokenItem; keep them.
+- Scope note: OpponentBadgeModal and QuickTokenHud also restyled (same scouting tags and foul steppers as S1/S6; left on the old amber/cyan/red palette would contradict S7).
+- Verification: `npm test` → PASSED: 33, FAILED: 0; `npm run build` → tsc + vite OK, 9 precache entries. Not done: visual check at 360-430px (no headless browser installed).

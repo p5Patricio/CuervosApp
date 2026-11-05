@@ -1,16 +1,6 @@
 import React from 'react';
 import { BoardToken, Player, OpponentBadge } from '../../types';
-import { 
-  X, 
-  Plus, 
-  Minus, 
-  Battery, 
-  Flame, 
-  EyeOff, 
-  Shield, 
-  RefreshCw,
-  AlertTriangle
-} from 'lucide-react';
+import { X, Plus, Minus, Crosshair, EyeOff, Shield } from 'lucide-react';
 
 interface QuickTokenHudProps {
   token: BoardToken | null;
@@ -23,6 +13,15 @@ interface QuickTokenHudProps {
   onSubstitute: (courtTokenId: string, benchPlayerId: string) => void;
   onSelectOpponentBadge: (tokenId: string, badge: OpponentBadge | null) => void;
 }
+
+const OPPONENT_BADGES: { id: OpponentBadge; label: string; Icon: typeof Shield }[] = [
+  { id: 'Tirador Letal', label: 'Tirador', Icon: Crosshair },
+  { id: 'Flotar (No tira)', label: 'Flotar', Icon: EyeOff },
+  { id: 'Poste Rival', label: 'Poste', Icon: Shield },
+];
+
+const hudShell =
+  'absolute top-3 left-1/2 -translate-x-1/2 z-40 glass rounded-2xl p-3 shadow-float w-[94%] max-w-xl';
 
 export const QuickTokenHud: React.FC<QuickTokenHudProps> = ({
   token,
@@ -37,7 +36,7 @@ export const QuickTokenHud: React.FC<QuickTokenHudProps> = ({
 }) => {
   if (!token) return null;
 
-  // Cuervos Player HUD
+  // Cuervos player HUD
   if (token.type === 'cuervos') {
     const linkedPlayer = players.find((p) => p.id === token.playerId) ||
       players.find((p) => p.dorsal === token.number);
@@ -46,84 +45,84 @@ export const QuickTokenHud: React.FC<QuickTokenHudProps> = ({
     const onCourtPlayerIds = new Set(tokens.filter((t) => t.type === 'cuervos' && t.playerId).map((t) => t.playerId));
     const benchCandidates = players.filter((p) => p.asistencia === 'presente' && !onCourtPlayerIds.has(p.id));
 
+    const fouls = linkedPlayer ? linkedPlayer.faltasEnVivo : (token.fouls ?? 0);
+    const fatigue = linkedPlayer ? linkedPlayer.fatiga : 0;
+
     return (
-      <div className="absolute top-3 left-1/2 -translate-x-1/2 z-40 bg-cuervos-dark/95 backdrop-blur-md border border-cuervos-cyan/80 rounded-2xl p-3 shadow-cyan-glow-lg w-[94%] max-w-xl animate-in slide-in-from-top duration-200">
-        <div className="flex items-center justify-between border-b border-cuervos-border/60 pb-2 mb-2.5">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-cuervos-elevated border border-cuervos-cyan text-cuervos-cyan flex items-center justify-center font-black font-mono shadow-sm">
-              #{linkedPlayer ? linkedPlayer.dorsal : token.number}
+      <div className={hudShell}>
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-10 h-10 shrink-0 rounded-full bg-cuervos-black border-2 border-cuervos-orange flex items-center justify-center font-display font-bold tabular-nums text-lg text-cuervos-chalk">
+              {linkedPlayer ? linkedPlayer.dorsal : token.number}
             </div>
-            <div>
-              <h4 className="font-bold text-white text-xs sm:text-sm flex items-center gap-1.5">
-                <span>{linkedPlayer ? linkedPlayer.nombre : token.label}</span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded bg-cuervos-elevated text-cuervos-cyan border border-cuervos-cyan/30">
-                  {token.role || linkedPlayer?.rolPrimario}
-                </span>
+            <div className="min-w-0">
+              <h4 className="font-semibold text-cuervos-chalk text-sm leading-tight truncate">
+                {linkedPlayer ? linkedPlayer.nombre : token.label}
               </h4>
-              <span className="text-[11px] text-slate-400">Control rápido en cancha (Fullscreen)</span>
+              <span className="text-xs text-slate-400 truncate block">{token.role || linkedPlayer?.rolPrimario}</span>
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-cuervos-elevated"
-            title="Cerrar panel"
-          >
+          <button type="button" onClick={onClose} className="icon-btn -mr-1" aria-label="Cerrar panel" title="Cerrar panel">
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
-          {/* Fouls Stepper */}
-          <div className="bg-cuervos-card/80 p-2 rounded-xl border border-cuervos-border/50 flex flex-col justify-between">
-            <div className="flex items-center justify-between text-[11px] text-slate-300 font-semibold mb-1">
-              <span className="flex items-center gap-1">
-                <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-                <span>Faltas:</span>
-              </span>
-              <span className={`font-mono font-black ${((linkedPlayer?.faltasEnVivo ?? token.fouls ?? 0) >= 4) ? 'text-red-400' : 'text-white'}`}>
-                {linkedPlayer ? linkedPlayer.faltasEnVivo : (token.fouls ?? 0)} / 5
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {/* Fouls stepper */}
+          <div className="rounded-xl bg-cuervos-black/60 border border-white/10 p-2.5">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="eyebrow">Faltas</span>
+              <span
+                className={`font-display font-bold tabular-nums text-sm leading-none ${
+                  fouls >= 4 ? 'text-cuervos-orange' : 'text-cuervos-chalk'
+                }`}
+              >
+                {fouls}/5
               </span>
             </div>
             <div className="flex items-center justify-between gap-1">
               <button
+                type="button"
                 onClick={() => linkedPlayer && onDecrementFouls(linkedPlayer.id)}
                 disabled={!linkedPlayer || linkedPlayer.faltasEnVivo <= 0}
-                className="p-1 rounded bg-cuervos-elevated text-slate-300 hover:text-white disabled:opacity-30"
+                className="btn-secondary w-10 h-10 min-h-0 px-0 disabled:opacity-30"
+                aria-label="Restar falta"
               >
-                <Minus className="w-3.5 h-3.5" />
+                <Minus className="w-4 h-4" strokeWidth={2.25} />
               </button>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1" aria-hidden="true">
                 {[1, 2, 3, 4, 5].map((n) => (
                   <span
                     key={n}
-                    className={`w-2 h-2 rounded-full ${
-                      n <= (linkedPlayer ? linkedPlayer.faltasEnVivo : (token.fouls ?? 0))
-                        ? n >= 5 ? 'bg-red-500 animate-ping' : n === 4 ? 'bg-amber-400' : 'bg-emerald-400'
-                        : 'bg-slate-700'
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      n <= fouls ? (n >= 4 ? 'bg-cuervos-orange' : 'bg-cuervos-chalk') : 'bg-white/10'
                     }`}
                   />
                 ))}
               </div>
               <button
+                type="button"
                 onClick={() => linkedPlayer && onIncrementFouls(linkedPlayer.id)}
                 disabled={!linkedPlayer || linkedPlayer.faltasEnVivo >= 5}
-                className="p-1 rounded bg-cuervos-elevated text-slate-300 hover:text-white disabled:opacity-30"
+                className="btn-secondary w-10 h-10 min-h-0 px-0 disabled:opacity-30"
+                aria-label="Sumar falta"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-4 h-4" strokeWidth={2.25} />
               </button>
             </div>
           </div>
 
-          {/* Fatigue Slider */}
-          <div className="bg-cuervos-card/80 p-2 rounded-xl border border-cuervos-border/50 flex flex-col justify-between">
-            <div className="flex items-center justify-between text-[11px] text-slate-300 font-semibold mb-1">
-              <span className="flex items-center gap-1">
-                <Battery className="w-3.5 h-3.5 text-cuervos-cyan" />
-                <span>Fatiga:</span>
-              </span>
-              <span className="font-mono font-black text-cuervos-cyan">
-                {linkedPlayer ? linkedPlayer.fatiga : 0}%
+          {/* Fatigue slider */}
+          <div className="rounded-xl bg-cuervos-black/60 border border-white/10 p-2.5">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="eyebrow">Fatiga</span>
+              <span
+                className={`font-display font-bold tabular-nums text-sm leading-none ${
+                  fatigue >= 75 ? 'text-cuervos-orange' : 'text-cuervos-chalk'
+                }`}
+              >
+                {fatigue}%
               </span>
             </div>
             <input
@@ -131,18 +130,16 @@ export const QuickTokenHud: React.FC<QuickTokenHudProps> = ({
               min="0"
               max="100"
               step="5"
-              value={linkedPlayer ? linkedPlayer.fatiga : 0}
+              value={fatigue}
               onChange={(e) => linkedPlayer && onSetFatigue(linkedPlayer.id, Number(e.target.value))}
-              className="w-full accent-cuervos-cyan h-1.5"
+              className="w-full h-10 accent-cuervos-orange"
+              aria-label="Fatiga"
             />
           </div>
 
-          {/* Quick Bench Substitution */}
-          <div className="bg-cuervos-card/80 p-2 rounded-xl border border-cuervos-border/50 flex flex-col justify-between">
-            <span className="text-[11px] text-slate-300 font-semibold flex items-center gap-1 mb-1">
-              <RefreshCw className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Sustituir por Banca:</span>
-            </span>
+          {/* Quick bench substitution */}
+          <div className="col-span-2 sm:col-span-1 rounded-xl bg-cuervos-black/60 border border-white/10 p-2.5">
+            <span className="eyebrow block mb-1.5">Sustituir</span>
             {benchCandidates.length > 0 ? (
               <select
                 onChange={(e) => {
@@ -152,9 +149,9 @@ export const QuickTokenHud: React.FC<QuickTokenHudProps> = ({
                   }
                 }}
                 defaultValue=""
-                className="w-full bg-cuervos-elevated text-white text-[11px] px-2 py-1 rounded-lg border border-cuervos-border focus:border-cuervos-cyan focus:outline-none"
+                className="field min-h-[40px] py-2 text-[13px]"
               >
-                <option value="" disabled>Seleccionar suplente...</option>
+                <option value="" disabled>Elegir suplente…</option>
                 {benchCandidates.map((bench) => (
                   <option key={bench.id} value={bench.id}>
                     #{bench.dorsal} {bench.nombre.split(' ')[0]} ({bench.rolPrimario.split(' ')[0]})
@@ -162,7 +159,7 @@ export const QuickTokenHud: React.FC<QuickTokenHudProps> = ({
                 ))}
               </select>
             ) : (
-              <span className="text-[10px] text-slate-500 italic">No hay jugadores disponibles en banca</span>
+              <span className="text-xs text-slate-500">Sin suplentes disponibles</span>
             )}
           </div>
         </div>
@@ -173,79 +170,48 @@ export const QuickTokenHud: React.FC<QuickTokenHudProps> = ({
   // Opponent HUD
   if (token.type === 'opponent') {
     return (
-      <div className="absolute top-3 left-1/2 -translate-x-1/2 z-40 bg-cuervos-dark/95 backdrop-blur-md border border-red-500/80 rounded-2xl p-3 shadow-red-glow w-[92%] max-w-md animate-in slide-in-from-top duration-200">
-        <div className="flex items-center justify-between border-b border-cuervos-border/60 pb-2 mb-2">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-red-600 text-white font-mono font-black flex items-center justify-center text-sm shadow-md">
+      <div className={`${hudShell} max-w-md`}>
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-full bg-white border-2 border-slate-900 flex items-center justify-center font-display font-black text-sm text-slate-950">
               {token.label}
             </div>
             <div>
-              <h4 className="font-bold text-white text-xs sm:text-sm">Rival {token.label}</h4>
-              <span className="text-[10px] text-slate-400">Etiqueta táctica de asignación rápida</span>
+              <h4 className="font-semibold text-cuervos-chalk text-sm leading-tight">Rival {token.label}</h4>
+              <span className="text-xs text-slate-400">Etiqueta de scouting</span>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-cuervos-elevated"
-          >
+          <button type="button" onClick={onClose} className="icon-btn -mr-1" aria-label="Cerrar panel">
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="grid grid-cols-3 gap-2">
-          <button
-            onClick={() => {
-              onSelectOpponentBadge(token.id, 'Tirador Letal');
-              onClose();
-            }}
-            className={`p-2 rounded-xl border text-[11px] font-bold flex flex-col items-center gap-1 transition-all ${
-              token.badge === 'Tirador Letal'
-                ? 'bg-amber-500/20 border-amber-400 text-amber-300 shadow-amber-glow'
-                : 'bg-cuervos-card border-cuervos-border text-slate-300 hover:border-amber-400'
-            }`}
-          >
-            <Flame className="w-4 h-4 text-amber-400" />
-            <span>Tirador Letal</span>
-          </button>
-
-          <button
-            onClick={() => {
-              onSelectOpponentBadge(token.id, 'Flotar (No tira)');
-              onClose();
-            }}
-            className={`p-2 rounded-xl border text-[11px] font-bold flex flex-col items-center gap-1 transition-all ${
-              token.badge === 'Flotar (No tira)'
-                ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-cyan-glow'
-                : 'bg-cuervos-card border-cuervos-border text-slate-300 hover:border-cyan-400'
-            }`}
-          >
-            <EyeOff className="w-4 h-4 text-cyan-400" />
-            <span>Flotar (No tira)</span>
-          </button>
-
-          <button
-            onClick={() => {
-              onSelectOpponentBadge(token.id, 'Poste Rival');
-              onClose();
-            }}
-            className={`p-2 rounded-xl border text-[11px] font-bold flex flex-col items-center gap-1 transition-all ${
-              token.badge === 'Poste Rival'
-                ? 'bg-red-500/20 border-red-500 text-red-300 shadow-red-glow'
-                : 'bg-cuervos-card border-cuervos-border text-slate-300 hover:border-red-500'
-            }`}
-          >
-            <Shield className="w-4 h-4 text-red-400" />
-            <span>Poste Rival</span>
-          </button>
+        <div className="seg">
+          {OPPONENT_BADGES.map(({ id, label, Icon }) => (
+            <button
+              key={id}
+              type="button"
+              aria-pressed={token.badge === id}
+              onClick={() => {
+                onSelectOpponentBadge(token.id, id);
+                onClose();
+              }}
+              className="seg-item"
+            >
+              <Icon className="w-4 h-4" strokeWidth={2} />
+              <span>{label}</span>
+            </button>
+          ))}
         </div>
 
         {token.badge && (
           <button
+            type="button"
             onClick={() => {
               onSelectOpponentBadge(token.id, null);
               onClose();
             }}
-            className="w-full mt-2 py-1.5 text-center text-[10px] text-slate-400 hover:text-red-400 transition-colors"
+            className="btn-ghost w-full mt-2 min-h-[36px] text-xs"
           >
             Quitar etiqueta
           </button>
