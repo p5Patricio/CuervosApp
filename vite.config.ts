@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  base: '/CuervosApp/',
   plugins: [
     react(),
     VitePWA({
@@ -16,15 +17,17 @@ export default defineConfig({
         background_color: '#050505',
         display: 'standalone',
         orientation: 'any',
+        start_url: '/CuervosApp/',
+        scope: '/CuervosApp/',
         icons: [
           {
-            src: '/logo-cuervos.png',
+            src: '/CuervosApp/logo-cuervos.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/logo-cuervos.png',
+            src: '/CuervosApp/logo-cuervos.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
